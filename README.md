@@ -1,6 +1,6 @@
-## Marvelpedia
+# Marvelpedia
 
-# Udacity Capstone Project
+## Udacity Capstone Project
 
 TODO: Finish Readme
 

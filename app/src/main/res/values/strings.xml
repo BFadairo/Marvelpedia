@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Marvelpedia</string>
+
+    <!-- Strings related to view hints -->
+    <string name="search_bar_hint">Enter search term</string>
+    <string name="master_list_character_hint">Character\'s Name</string>
 </resources>

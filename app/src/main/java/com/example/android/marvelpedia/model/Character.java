@@ -3,11 +3,12 @@ package com.example.android.marvelpedia.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Character {
+public class Character implements Serializable {
     @SerializedName("id")
     @Expose
     private Integer id;

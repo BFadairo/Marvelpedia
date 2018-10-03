@@ -15,7 +15,7 @@ import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Utils.Network.GetMarvelData;
 import com.example.android.marvelpedia.Utils.Network.RetrofitInstance;
 import com.example.android.marvelpedia.model.Character;
-import com.example.android.marvelpedia.model.Data;
+import com.example.android.marvelpedia.model.MarvelResultCharacter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class MasterList extends Fragment {
     private MasterListCharacterAdapter mCharacterAdapter;
     private List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
-    private Data fetchedData;
+    private MarvelResultCharacter fetchedData;
     // TODO: Customize parameters
     private int mColumnCount = 3;
 
@@ -65,29 +65,29 @@ public class MasterList extends Fragment {
         populateUi();
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
 
-        Call<Data> characterCall = marvelData.getCharacters("1", "cd962dcb13cefe34366b4076f38d5653", "323614045909f81499b1549b610f76fd", "Spider");
+        Call<MarvelResultCharacter> characterCall = marvelData.getCharacters("1", "cd962dcb13cefe34366b4076f38d5653", "323614045909f81499b1549b610f76fd", "Spider");
         Log.v(LOG_TAG, "" +
                 characterCall.request().url());
 
-        characterCall.enqueue(new Callback<Data>() {
+        characterCall.enqueue(new Callback<MarvelResultCharacter>() {
             @Override
-            public void onResponse(Call<Data> call, Response<Data> response) {
+            public void onResponse(Call<MarvelResultCharacter> call, Response<MarvelResultCharacter> response) {
                 if (response.isSuccessful()) {
-                    Log.v(LOG_TAG, response.body().getCount().toString());
                     fetchedData = response.body();
-                    Log.v(LOG_TAG, fetchedData.getCount().toString());
-                    /*mCharacters.clear();
-                    mCharacters = fetchedData.getResults();
+                    Log.v(LOG_TAG, fetchedData.getData().getCount().toString());
+                    mCharacters.clear();
+                    mCharacters = fetchedData.getData().getResults();
+                    mCharacterAdapter.setCharacterData(mCharacters);
                     for (int i = 0; i < 10; i++){
                         Log.v(LOG_TAG, mCharacters.get(i).getName());
                     }
                     Log.v(LOG_TAG, "Retrofit Call Successful");
-                    */
+
                 }
             }
 
             @Override
-            public void onFailure(Call<Data> call, Throwable t) {
+            public void onFailure(Call<MarvelResultCharacter> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
             }
         });

@@ -39,6 +39,7 @@ public class Data implements Serializable {
      * @param offset
      */
     public Data(Integer offset, Integer limit, Integer total, Integer count, List<Character> characters) {
+        super();
         this.offset = offset;
         this.limit = limit;
         this.total = total;

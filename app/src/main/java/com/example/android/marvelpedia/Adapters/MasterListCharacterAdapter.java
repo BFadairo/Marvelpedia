@@ -2,6 +2,7 @@ package com.example.android.marvelpedia.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,8 @@ import java.util.List;
 
 public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListCharacterAdapter.ViewHolder> {
 
-    private final List<Character> mCharacters;
+    private final static String LOG_TAG = MasterListCharacterAdapter.class.getSimpleName();
+    private List<Character> mCharacters;
     private Context mContext;
 
     public MasterListCharacterAdapter(Context context, List<Character> characters) {
@@ -45,13 +47,17 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
 
         Thumbnail charThumbnail = currentCharacter.getThumbnail();
 
-        if (charThumbnail.getPath().isEmpty()) {
+        if (charThumbnail.getPath().endsWith("image_not_available")) {
             //If there's no Image marvel Image will be used
-            //TODO: Get a Marvel Image for this
+            Picasso.get().load(R.mipmap.placeholder).into(characterImage);
+            characterImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            //TODO: Get a Marvel I4mage for this
         } else {
+            characterImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             String thumbnailExtension = charThumbnail.getExtension();
             String thumbnailPath = charThumbnail.getPath();
-            String combinedPath = thumbnailPath + thumbnailExtension;
+            String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            Log.v(LOG_TAG, combinedPath);
             try {
                 Picasso.get().load(combinedPath).into(characterImage);
             } catch (Exception e) {
@@ -60,6 +66,11 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
         }
 
         characterName.setText(currentCharacter.getName());
+    }
+
+    public void setCharacterData(List<Character> characters) {
+        this.mCharacters = characters;
+        notifyDataSetChanged();
     }
 
     @Override

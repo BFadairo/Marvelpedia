@@ -4,4 +4,7 @@
     <!-- Strings related to view hints -->
     <string name="search_bar_hint">Enter search term</string>
     <string name="master_list_character_hint">Character\'s Name</string>
+
+    <!-- Strings related to content transitions -->
+    <string name="image_transition">Image Transition</string>
 </resources>

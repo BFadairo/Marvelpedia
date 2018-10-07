@@ -1,5 +1,6 @@
 package com.example.android.marvelpedia.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
+import com.example.android.marvelpedia.BuildConfig;
+import com.example.android.marvelpedia.DetailActivity;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Utils.Network.GetMarvelData;
 import com.example.android.marvelpedia.Utils.Network.RetrofitInstance;
@@ -27,17 +30,16 @@ import retrofit2.Response;
 /**
  * A fragment representing a list of Items.
  */
-public class MasterList extends Fragment {
+public class MasterList extends Fragment implements MasterListCharacterAdapter.CharacterAdapterOnClick {
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    private final static String CHARACTER_EXTRAS = "character_extras";
     private RecyclerView characterRecyclerView;
     private MasterListCharacterAdapter mCharacterAdapter;
     private List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
     private MarvelResultCharacter fetchedData;
-    // TODO: Customize parameters
     private int mColumnCount = 3;
 
     /**
@@ -64,8 +66,9 @@ public class MasterList extends Fragment {
     private void retrieveCharacters() {
         populateUi();
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
-
-        Call<MarvelResultCharacter> characterCall = marvelData.getCharacters("1", "cd962dcb13cefe34366b4076f38d5653", "323614045909f81499b1549b610f76fd", "Spider");
+        String apiKey = BuildConfig.MARVEL_API_KEY;
+        String privateKey = BuildConfig.MARVEL_HASH_KEY;
+        Call<MarvelResultCharacter> characterCall = marvelData.getCharacters("1", apiKey, privateKey, "Spider");
         Log.v(LOG_TAG, "" +
                 characterCall.request().url());
 
@@ -82,7 +85,6 @@ public class MasterList extends Fragment {
                         Log.v(LOG_TAG, mCharacters.get(i).getName());
                     }
                     Log.v(LOG_TAG, "Retrofit Call Successful");
-
                 }
             }
 
@@ -92,14 +94,13 @@ public class MasterList extends Fragment {
             }
         });
 
-
     }
 
 
     private void populateUi() {
         //Create a new Character Adapter
         // This adapter takes in an empty list of characters as well as a context
-        mCharacterAdapter = new MasterListCharacterAdapter(getContext(), mCharacters);
+        mCharacterAdapter = new MasterListCharacterAdapter(getContext(), mCharacters, this);
 
         //Set the adapter on the RecyclerView
         characterRecyclerView.setAdapter(mCharacterAdapter);
@@ -107,5 +108,12 @@ public class MasterList extends Fragment {
         //Create a GridLayoutManager
         layoutManager = new GridLayoutManager(getContext(), mColumnCount);
         characterRecyclerView.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    public void onClick(Character character) {
+        Intent characterActivity = new Intent(getContext(), DetailActivity.class);
+        characterActivity.putExtra(CHARACTER_EXTRAS, character);
+        startActivity(characterActivity);
     }
 }

@@ -17,5 +17,4 @@
         android:name="com.example.android.marvelpedia.Fragments.MasterList"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 </LinearLayout>

@@ -1,14 +1,16 @@
 package com.example.android.marvelpedia.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Character implements Serializable {
+public class Character implements Parcelable {
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -27,6 +29,17 @@ public class Character implements Serializable {
     @SerializedName("urls")
     @Expose
     private List<Url> urls = new ArrayList<>();
+    public static final Creator<Character> CREATOR = new Creator<Character>() {
+        @Override
+        public Character createFromParcel(Parcel source) {
+            return new Character(source);
+        }
+
+        @Override
+        public Character[] newArray(int size) {
+            return new Character[size];
+        }
+    };
 
     /**
      * No args constructor for use in serialization
@@ -73,5 +86,43 @@ public class Character implements Serializable {
 
     public List<Url> getUrls() {
         return urls;
+    }
+
+    private String imageUrl;
+
+    protected Character(Parcel in) {
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.name = in.readString();
+        this.description = in.readString();
+        this.modified = in.readString();
+        this.thumbnail = (Thumbnail) in.readSerializable();
+        this.urls = new ArrayList<Url>();
+        in.readList(this.urls, Url.class.getClassLoader());
+        this.imageUrl = in.readString();
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public String setImageUrl(String imageLink) {
+        imageUrl = imageLink;
+        return imageUrl;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+        dest.writeString(this.modified);
+        dest.writeSerializable(this.thumbnail);
+        dest.writeList(this.urls);
+        dest.writeString(this.imageUrl);
     }
 }

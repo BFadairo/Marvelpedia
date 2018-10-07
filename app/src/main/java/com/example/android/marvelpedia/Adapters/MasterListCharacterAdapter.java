@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.marvelpedia.R;
-import com.example.android.marvelpedia.dummy.DummyContent.DummyItem;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Thumbnail;
 import com.squareup.picasso.Picasso;
@@ -20,12 +19,15 @@ import java.util.List;
 public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListCharacterAdapter.ViewHolder> {
 
     private final static String LOG_TAG = MasterListCharacterAdapter.class.getSimpleName();
+    private final String NO_IMAGE = "no_image_available";
     private List<Character> mCharacters;
+    private final CharacterAdapterOnClick charClickHandler;
     private Context mContext;
 
-    public MasterListCharacterAdapter(Context context, List<Character> characters) {
+    public MasterListCharacterAdapter(Context context, List<Character> characters, CharacterAdapterOnClick adapterOnClick) {
         mContext = context;
         mCharacters = characters;
+        charClickHandler = adapterOnClick;
     }
 
     @Override
@@ -47,16 +49,18 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
 
         Thumbnail charThumbnail = currentCharacter.getThumbnail();
 
-        if (charThumbnail.getPath().endsWith("image_not_available")) {
+        if (charThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.placeholder).into(characterImage);
             characterImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            //TODO: Get a Marvel I4mage for this
+            //TODO: Get a Marvel Image for this
         } else {
             characterImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             String thumbnailExtension = charThumbnail.getExtension();
             String thumbnailPath = charThumbnail.getPath();
             String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            currentCharacter.setImageUrl(combinedPath);
+            Log.v(LOG_TAG, currentCharacter.getImageUrl());
             Log.v(LOG_TAG, combinedPath);
             try {
                 Picasso.get().load(combinedPath).into(characterImage);
@@ -64,7 +68,6 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
                 e.printStackTrace();
             }
         }
-
         characterName.setText(currentCharacter.getName());
     }
 
@@ -73,22 +76,33 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
         notifyDataSetChanged();
     }
 
+    public interface CharacterAdapterOnClick {
+        void onClick(Character character);
+    }
+
     @Override
     public int getItemCount() {
         return mCharacters.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final View mView;
         public final ImageView mCharacterImage;
         public final TextView mCharacterName;
-        public DummyItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
+            mView.setOnClickListener(this);
             mCharacterImage = view.findViewById(R.id.master_list_image);
             mCharacterName = view.findViewById(R.id.master_list_character_name);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int adapterPosition = getAdapterPosition();
+            Character character = mCharacters.get(adapterPosition);
+            charClickHandler.onClick(character);
         }
     }
 }

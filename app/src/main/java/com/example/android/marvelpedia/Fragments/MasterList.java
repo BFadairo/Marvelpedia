@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
 import com.example.android.marvelpedia.BuildConfig;
@@ -36,6 +37,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final static String CHARACTER_EXTRAS = "character_extras";
     private RecyclerView characterRecyclerView;
+    private android.support.v7.widget.SearchView marvelSearchView;
+    private CharSequence marvelSearchTerm;
     private MasterListCharacterAdapter mCharacterAdapter;
     private List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
@@ -56,6 +59,7 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
         // Get a reference to the RecyclerView in the fragment_master_list xml layout file
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
+        marvelSearchTerm = rootView.findViewById(R.id.search_view_text);
 
         retrieveCharacters();
 
@@ -93,7 +97,6 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
                 Log.v(LOG_TAG, t.getMessage());
             }
         });
-
     }
 
 
@@ -115,5 +118,10 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         Intent characterActivity = new Intent(getContext(), DetailActivity.class);
         characterActivity.putExtra(CHARACTER_EXTRAS, character);
         startActivity(characterActivity);
+    }
+
+    private void getQueryFromSearchBar(){
+
+        marvelSearchTerm = marvelSearchView.getQuery();
     }
 }

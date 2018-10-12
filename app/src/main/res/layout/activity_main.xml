@@ -6,12 +6,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="@string/search_bar_hint" />
-
     <fragment
         android:id="@+id/master_list_fragment_id"
         android:name="com.example.android.marvelpedia.Fragments.MasterList"

@@ -40,18 +40,14 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-
         Character currentCharacter = mCharacters.get(position);
-
         ImageView characterImage = holder.mCharacterImage;
-
         TextView characterName = holder.mCharacterName;
-
         Thumbnail charThumbnail = currentCharacter.getThumbnail();
 
         if (charThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
-            Picasso.get().load(R.mipmap.placeholder).into(characterImage);
+            Picasso.get().load(R.mipmap.ic_launcher).into(characterImage);
             characterImage.setScaleType(ImageView.ScaleType.FIT_XY);
             //TODO: Get a Marvel Image for this
         } else {

@@ -6,11 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
 import com.example.android.marvelpedia.BuildConfig;
@@ -18,8 +18,9 @@ import com.example.android.marvelpedia.DetailActivity;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Utils.Network.GetMarvelData;
 import com.example.android.marvelpedia.Utils.Network.RetrofitInstance;
+import com.example.android.marvelpedia.model.BaseJsonResponse;
 import com.example.android.marvelpedia.model.Character;
-import com.example.android.marvelpedia.model.MarvelResultCharacter;
+import com.example.android.marvelpedia.model.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +35,15 @@ import retrofit2.Response;
 public class MasterList extends Fragment implements MasterListCharacterAdapter.CharacterAdapterOnClick {
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
-    private static final String ARG_COLUMN_COUNT = "column-count";
     private final static String CHARACTER_EXTRAS = "character_extras";
+    private String ATTRIBUTION_TEXT;
     private RecyclerView characterRecyclerView;
     private android.support.v7.widget.SearchView marvelSearchView;
     private CharSequence marvelSearchTerm;
     private MasterListCharacterAdapter mCharacterAdapter;
+    private Data<Character> characterData;
     private List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
-    private MarvelResultCharacter fetchedData;
     private int mColumnCount = 3;
 
     /**
@@ -55,46 +56,53 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_character_list, container, false);
+        View rootView = inflater.inflate(R.layout.character_list, container, false);
 
         // Get a reference to the RecyclerView in the fragment_master_list xml layout file
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
-        marvelSearchTerm = rootView.findViewById(R.id.search_view_text);
-
-        retrieveCharacters();
+        marvelSearchView = rootView.findViewById(R.id.search_view_text);
+        //Used to retrieve the query and update the search results from the SearchView
+        getQueryFromSearchBar();
 
         // Return the root view
         return rootView;
     }
 
-    private void retrieveCharacters() {
+    /**
+     * Thie method is used to search for characters
+     *
+     * @param searchTerm for this case (the hero's name)
+     */
+    private void retrieveCharacters(String searchTerm) {
         populateUi();
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         String apiKey = BuildConfig.MARVEL_API_KEY;
         String privateKey = BuildConfig.MARVEL_HASH_KEY;
-        Call<MarvelResultCharacter> characterCall = marvelData.getCharacters("1", apiKey, privateKey, "Spider");
+        Call<BaseJsonResponse<Character>> characterCall = marvelData.getCharacters("1", apiKey, privateKey, searchTerm);
         Log.v(LOG_TAG, "" +
                 characterCall.request().url());
 
-        characterCall.enqueue(new Callback<MarvelResultCharacter>() {
+        characterCall.enqueue(new Callback<BaseJsonResponse<Character>>() {
             @Override
-            public void onResponse(Call<MarvelResultCharacter> call, Response<MarvelResultCharacter> response) {
+            public void onResponse(Call<BaseJsonResponse<Character>> call, Response<BaseJsonResponse<Character>> response) {
                 if (response.isSuccessful()) {
-                    fetchedData = response.body();
-                    Log.v(LOG_TAG, fetchedData.getData().getCount().toString());
                     mCharacters.clear();
-                    mCharacters = fetchedData.getData().getResults();
+                    characterData = response.body().getData();
+                    mCharacters = characterData.getResults();
+                    //Log.v(LOG_TAG, fetchedData.getCharacterData().getCount().toString());
+                    //mCharacters = fetchedData.getCharacterData().getCharacters();
                     mCharacterAdapter.setCharacterData(mCharacters);
-                    for (int i = 0; i < 10; i++){
+                    /*for (int i = 0; i < 10; i++){
                         Log.v(LOG_TAG, mCharacters.get(i).getName());
-                    }
+                    }*/
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
 
             @Override
-            public void onFailure(Call<MarvelResultCharacter> call, Throwable t) {
+            public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
+                Log.v(LOG_TAG, "Cause: " + t.getCause());
             }
         });
     }
@@ -120,8 +128,20 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         startActivity(characterActivity);
     }
 
-    private void getQueryFromSearchBar(){
+    private void getQueryFromSearchBar() {
+        marvelSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchTerm) {
+                marvelSearchTerm = searchTerm;
+                Log.v(LOG_TAG, "Search Term: " + marvelSearchTerm);
+                retrieveCharacters(searchTerm);
+                return true;
+            }
 
-        marvelSearchTerm = marvelSearchView.getQuery();
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
     }
 }

@@ -29,6 +29,9 @@ public class Character implements Parcelable {
     @SerializedName("urls")
     @Expose
     private List<Url> urls = new ArrayList<>();
+
+    private String imageUrl;
+
     public static final Creator<Character> CREATOR = new Creator<Character>() {
         @Override
         public Character createFromParcel(Parcel source) {
@@ -88,7 +91,16 @@ public class Character implements Parcelable {
         return urls;
     }
 
-    private String imageUrl;
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public String setImageUrl(String imageLink) {
+        imageUrl = imageLink;
+        return imageUrl;
+    }
+
+
 
     protected Character(Parcel in) {
         this.id = (Integer) in.readValue(Integer.class.getClassLoader());
@@ -99,15 +111,6 @@ public class Character implements Parcelable {
         this.urls = new ArrayList<Url>();
         in.readList(this.urls, Url.class.getClassLoader());
         this.imageUrl = in.readString();
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String setImageUrl(String imageLink) {
-        imageUrl = imageLink;
-        return imageUrl;
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Data implements Serializable {
+public class Data<T> implements Serializable {
 
     @SerializedName("offset")
     @Expose
@@ -23,7 +23,7 @@ public class Data implements Serializable {
     private Integer count;
     @SerializedName("results")
     @Expose
-    private List<Character> mCharacters = new ArrayList<>();
+    private List<T> mResults = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization
@@ -34,17 +34,17 @@ public class Data implements Serializable {
     /**
      * @param total
      * @param limit
-     * @param characters
+     * @param results
      * @param count
      * @param offset
      */
-    public Data(Integer offset, Integer limit, Integer total, Integer count, List<Character> characters) {
+    public Data(Integer offset, Integer limit, Integer total, Integer count, List<T> results) {
         super();
         this.offset = offset;
         this.limit = limit;
         this.total = total;
         this.count = count;
-        this.mCharacters = characters;
+        this.mResults = results;
     }
 
     public Integer getOffset() {
@@ -63,8 +63,8 @@ public class Data implements Serializable {
         return count;
     }
 
-    public List<Character> getResults() {
-        return mCharacters;
+    public List<T> getResults() {
+        return mResults;
     }
 
 }

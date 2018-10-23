@@ -4,10 +4,17 @@
     <!-- Strings related to view hints -->
     <string name="search_bar_hint">Enter search term</string>
     <string name="master_list_character_hint">Character\'s Name</string>
+    <string name="comic_title_hint">Comic Title</string>
 
     <!-- Strings related to content transitions -->
     <string name="image_transition">Image Transition</string>
 
     <!-- Strings related to content descriptions -->
     <string name="detail_activity_description">Character Image</string>
+
+    <!-- Strings related to text fields -->
+    <string name="comic_header">Comics:</string>
+    <string name="story_header">Stories:</string>
+    <string name="event_header">Events:</string>
+    <string name="character_header">Characters:</string>
 </resources>

@@ -2,38 +2,50 @@ package com.example.android.marvelpedia;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.ImageView;
 
-import com.example.android.marvelpedia.model.Character;
-import com.squareup.picasso.Picasso;
+import com.example.android.marvelpedia.Fragments.ComicFragment;
+import com.example.android.marvelpedia.Fragments.DetailFragment;
+import com.example.android.marvelpedia.model.Comic;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements ComicFragment.SendComicData {
 
-    private Character passedCharacter;
-    private int passedCharacterId;
-    private String characterImage;
-    private ImageView characterImageLayout;
+    private ComicFragment comicFragment;
+    private DetailFragment detailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        retrieveCharacterDetails();
 
-        Log.v("Tag", passedCharacter.getName());
+        Bundle argsToPass = getIntent().getExtras();
+
+        //Create a new Detail Fragment
+        detailFragment = new DetailFragment();
+        //Set the arguments for the detail fragment
+        detailFragment.setArguments(argsToPass);
+
+        //Create a new Comic Fragment
+        comicFragment = new ComicFragment();
+        //Set the arguments for the comic fragment
+        comicFragment.setArguments(argsToPass);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.comic_container, comicFragment)
+                .add(R.id.detail_information_container, detailFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
-    public void retrieveCharacterDetails() {
-        passedCharacter = getIntent().getParcelableExtra("character_extras");
-        passedCharacterId = passedCharacter.getId();
-        setCharacterImage();
-    }
-
-    public void setCharacterImage() {
-        characterImageLayout = findViewById(R.id.character_image_detail);
-        characterImage = passedCharacter.getImageUrl();
-        Log.v("Tag", characterImage + "");
-        Picasso.get().load(characterImage).into(characterImageLayout);
+    @Override
+    public void sendComic(Comic comic) {
+        Bundle bundle = new Bundle();
+        //TODO Add string for this
+        bundle.putParcelable("comic_extras", comic);
+        detailFragment = new DetailFragment();
+        detailFragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction()
+                .remove(comicFragment)
+                .replace(R.id.detail_information_container, detailFragment)
+                .commit();
     }
 }

@@ -10,6 +10,7 @@ public class RetrofitInstance {
     private static Retrofit retrofit = null;
 
     public static Retrofit getRetrofitInstance() {
+
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()

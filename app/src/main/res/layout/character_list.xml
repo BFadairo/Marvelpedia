@@ -18,13 +18,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/search_bar_hint"
             app:defaultQueryHint="@string/search_bar_hint"
+            app:iconifiedByDefault="false"
             android:inputType="textPersonName" />
-
-        <ImageButton
-            android:layout_width="25dp"
-            android:layout_height="10dp"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/ic_arrow_forward_black_24dp"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

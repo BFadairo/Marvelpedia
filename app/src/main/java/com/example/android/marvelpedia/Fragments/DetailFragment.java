@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
+import com.example.android.marvelpedia.model.Event;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
@@ -21,9 +22,11 @@ public class DetailFragment extends Fragment {
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
     private final String CHARACTER_EXTRAS = "character_extras";
     private final String COMIC_EXTRAS = "comic_extras";
+    private final String EVENT_EXTRAS = "event_extras";
     public String imagePath;
     private Character passedCharacter;
     private Comic passedComic;
+    private Event passedEvent;
     private ImageView detailImage;
     private TextView detailDescription;
 
@@ -44,6 +47,8 @@ public class DetailFragment extends Fragment {
         } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
             passedComic = passedArgs.getParcelable(COMIC_EXTRAS);
             Log.v(LOG_TAG, passedComic.getTitle());
+        } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
+            passedEvent = passedArgs.getParcelable(EVENT_EXTRAS);
         }
 
         //Get a reference to the description view
@@ -68,6 +73,8 @@ public class DetailFragment extends Fragment {
             imagePath = passedCharacter.getImageUrl();
         } else if (passedComic != null) {
             imagePath = passedComic.getImageUrl();
+        } else if (passedEvent != null) {
+            imagePath = passedEvent.getImageUrl();
         }
 
         Picasso.get().load(imagePath).into(detailImage);

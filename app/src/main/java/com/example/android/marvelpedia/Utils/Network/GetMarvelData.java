@@ -15,5 +15,5 @@ public interface GetMarvelData {
     Call<BaseJsonResponse<Character>> getCharacters(@Query("ts") String timeStamp, @Query("apikey") String apiKey, @Query("hash") String privateKey, @Query("nameStartsWith") String heroName);
 
     @GET("characters/{characterId}/comics")
-    Call<BaseJsonResponse<Comic>> getComics(@Path("characterId") int CharacterId, @Query("ts") String timeStamp, @Query("apikey") String apiKey, @Query("hash") String privateKey);
+    Call<BaseJsonResponse<Comic>> getCharacterComics(@Path("characterId") int CharacterId, @Query("ts") String timeStamp, @Query("apikey") String apiKey, @Query("hash") String privateKey);
 }

@@ -10,25 +10,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.marvelpedia.R;
-import com.example.android.marvelpedia.model.Comic;
+import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Thumbnail;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.ViewHolder> {
+public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetailAdapter.ViewHolder> {
 
-    private final static String LOG_TAG = ComicDetailAdapter.class.getSimpleName();
+    private final static String LOG_TAG = CharacterDetailAdapter.class.getSimpleName();
     private final String NO_IMAGE = "no_image_available";
-    private final ComicOnClick comicClick;
+    private final CharacterOnClick characterClick;
     private final String portrait_uncanny = "portrait_uncanny";
-    private List<Comic> mComics;
+    private List<Character> mCharacters;
     private Context mContext;
 
-    public ComicDetailAdapter(Context context, List<Comic> comics, ComicOnClick onClick) {
+    public CharacterDetailAdapter(Context context, List<Character> characters, CharacterOnClick onClick) {
         mContext = context;
-        mComics = comics;
-        comicClick = onClick;
+        mCharacters = characters;
+        characterClick = onClick;
     }
 
     @Override
@@ -36,17 +36,17 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.detaiL_frag_list, parent, false);
 
-        return new ComicDetailAdapter.ViewHolder(view);
+        return new CharacterDetailAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        Comic currentComic = mComics.get(position);
+        Character currentCharacter = mCharacters.get(position);
 
         ImageView comicImage = viewHolder.mComicImage;
         //TextView comicTitle = viewHolder.mComicName;
 
-        Thumbnail currentComicThumbnail = currentComic.getThumbnail();
+        Thumbnail currentComicThumbnail = currentCharacter.getThumbnail();
 
         if (currentComicThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
@@ -59,8 +59,8 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
             String thumbnailPath = currentComicThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
-            currentComic.setImageUrl(combinedPath);
-            Log.v(LOG_TAG, currentComic.getImageUrl());
+            currentCharacter.setImageUrl(combinedPath);
+            Log.v(LOG_TAG, currentCharacter.getImageUrl());
             Log.v(LOG_TAG, combinedPath);
             try {
                 Picasso.get().load(combinedPath).into(comicImage);
@@ -73,16 +73,16 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
 
     @Override
     public int getItemCount() {
-        return mComics.size();
+        return mCharacters.size();
     }
 
-    public void setComicData(List<Comic> comics) {
-        this.mComics = comics;
+    public void setCharacterData(List<Character> characters) {
+        this.mCharacters = characters;
         notifyDataSetChanged();
     }
 
-    public interface ComicOnClick {
-        void onClick(Comic comic);
+    public interface CharacterOnClick {
+        void onClick(Character character);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -101,8 +101,8 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            Comic comic = mComics.get(adapterPosition);
-            comicClick.onClick(comic);
+            Character character = mCharacters.get(adapterPosition);
+            characterClick.onClick(character);
         }
     }
 }

@@ -24,16 +24,16 @@ public class Event implements Parcelable {
     };
     @SerializedName("id")
     @Expose
-    public int eventId;
+    private int eventId;
     @SerializedName("title")
     @Expose
-    public String eventTitle;
+    private String eventTitle;
     @SerializedName("description")
     @Expose
-    public String eventDescription;
+    private String eventDescription;
     @SerializedName("urls")
     @Expose
-    private List<Url> urls = null;
+    private List<Url> urls;
     @SerializedName("thumbnail")
     @Expose
     private Thumbnail thumbnails = null;
@@ -47,7 +47,7 @@ public class Event implements Parcelable {
         this.thumbnails = thumbnails;
     }
 
-    protected Event(Parcel in) {
+    private Event(Parcel in) {
         this.eventId = in.readInt();
         this.eventTitle = in.readString();
         this.eventDescription = in.readString();

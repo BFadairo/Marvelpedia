@@ -34,7 +34,7 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.detaiL_frag_list, parent, false);
+                .inflate(R.layout.detail_frag_list, parent, false);
 
         return new ComicDetailAdapter.ViewHolder(view);
     }
@@ -93,7 +93,7 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mComicImage = view.findViewById(R.id.comic_image);
+            mComicImage = view.findViewById(R.id.item_image);
             mView.setOnClickListener(this);
             //mComicName = view.findViewById(R.id.comic_title);
         }

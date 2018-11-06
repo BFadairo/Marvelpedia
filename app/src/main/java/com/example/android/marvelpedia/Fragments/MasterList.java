@@ -78,7 +78,7 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         String apiKey = BuildConfig.MARVEL_API_KEY;
         String privateKey = BuildConfig.MARVEL_HASH_KEY;
-        Call<BaseJsonResponse<Character>> characterCall = marvelData.getCharacters("1", apiKey, privateKey, searchTerm);
+        Call<BaseJsonResponse<Character>> characterCall = marvelData.getCharacters("1", apiKey, privateKey, searchTerm, 100);
         Log.v(LOG_TAG, "" +
                 characterCall.request().url());
 
@@ -102,7 +102,6 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
             @Override
             public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
-                Log.v(LOG_TAG, "Cause: " + t.getCause());
             }
         });
     }

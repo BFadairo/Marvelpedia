@@ -32,7 +32,6 @@ public class DetailFragment extends Fragment {
 
 
     public DetailFragment() {
-
     }
 
     @Nullable
@@ -77,7 +76,7 @@ public class DetailFragment extends Fragment {
             imagePath = passedEvent.getImageUrl();
         }
 
-        Picasso.get().load(imagePath).into(detailImage);
+        Picasso.get().load(imagePath).fit().into(detailImage);
     }
 
     private void setExtraDetailInformation() {

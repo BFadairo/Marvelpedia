@@ -34,7 +34,7 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.detaiL_frag_list, parent, false);
+                .inflate(R.layout.detail_frag_list, parent, false);
 
         return new CharacterDetailAdapter.ViewHolder(view);
     }
@@ -43,7 +43,7 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         Character currentCharacter = mCharacters.get(position);
 
-        ImageView comicImage = viewHolder.mComicImage;
+        ImageView comicImage = viewHolder.mCharacterImage;
         //TextView comicTitle = viewHolder.mComicName;
 
         Thumbnail currentComicThumbnail = currentCharacter.getThumbnail();
@@ -87,13 +87,13 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final View mView;
-        public final ImageView mComicImage;
+        public final ImageView mCharacterImage;
         //public final TextView mComicName;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mComicImage = view.findViewById(R.id.comic_image);
+            mCharacterImage = view.findViewById(R.id.item_image);
             mView.setOnClickListener(this);
             //mComicName = view.findViewById(R.id.comic_title);
         }

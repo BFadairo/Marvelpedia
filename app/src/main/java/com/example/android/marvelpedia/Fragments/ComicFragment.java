@@ -71,7 +71,7 @@ public class ComicFragment extends Fragment implements ComicDetailAdapter.ComicO
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         String apiKey = BuildConfig.MARVEL_API_KEY;
         String privateKey = BuildConfig.MARVEL_HASH_KEY;
-        Call<BaseJsonResponse<Comic>> comicCall = marvelData.getCharacterComics(retrievedCharacter.getId(), "1", apiKey, privateKey);
+        Call<BaseJsonResponse<Comic>> comicCall = marvelData.getCharacterComics(retrievedCharacter.getId(), "1", apiKey, privateKey, 50);
         Log.v(LOG_TAG, "" +
                 comicCall.request().url());
 

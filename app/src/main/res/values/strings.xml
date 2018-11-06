@@ -16,5 +16,17 @@
     <string name="comic_header">Comics:</string>
     <string name="story_header">Stories:</string>
     <string name="event_header">Events:</string>
+    <string name="series_header">Series:</string>
     <string name="character_header">Characters:</string>
+
+    <!-- Strings related to extras passed through fragments/intents -->
+    <string name="character_extras">character_extras</string>
+    <string name="comic_extras">comic_extras</string>
+    <string name="event_extras">event_extras</string>
+
+    <!-- Strings related to fragment tags -->
+    <string name="character_tag">Character</string>
+    <string name="comic_tag">Comic</string>
+    <string name="event_tag">Event</string>
+    <string name="series_tag">Series</string>
 </resources>

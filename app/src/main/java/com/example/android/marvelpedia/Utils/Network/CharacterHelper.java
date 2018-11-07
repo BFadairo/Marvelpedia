@@ -37,7 +37,7 @@ public class CharacterHelper {
 
     public void retrieveCharacterEvents(Character character) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
-        Call<BaseJsonResponse<Event>> eventCall = marvelData.getCharacterEvents(character.getId(), "1", apiKey, privateKey, 50);
+        final Call<BaseJsonResponse<Event>> eventCall = marvelData.getCharacterEvents(character.getId(), "1", apiKey, privateKey, 50);
         Log.v(LOG_TAG, "" +
                 eventCall.request().url());
 
@@ -48,7 +48,7 @@ public class CharacterHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    mCharacterInterface.sendEvents(mEvents);
+                    mCharacterInterface.sendCharacterEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -57,6 +57,8 @@ public class CharacterHelper {
             public void onFailure(Call<BaseJsonResponse<Event>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                Log.v(LOG_TAG, "Attempting Call Again");
+                call.clone();
             }
         });
     }
@@ -74,12 +76,7 @@ public class CharacterHelper {
                     mComics.clear();
                     comicData = response.body().getData();
                     mComics = comicData.getResults();
-                    //Log.v(LOG_TAG, fetchedData.getCharacterData().getCount().toString());
-                    //mCharacters = fetchedData.getCharacterData().getCharacters();
-                    mCharacterInterface.sendComics(mComics);
-                    /*for (int i = 0; i < 10; i++){
-                        Log.v(LOG_TAG, mCharacters.get(i).getName());
-                    }*/
+                    mCharacterInterface.sendCharacterComics(mComics);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -88,6 +85,7 @@ public class CharacterHelper {
             public void onFailure(Call<BaseJsonResponse<Comic>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                call.clone();
             }
         });
     }
@@ -104,8 +102,7 @@ public class CharacterHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    //seriesInterface.sendData(mSeries);
-                    mCharacterInterface.sendSeries(mSeries);
+                    mCharacterInterface.sendCharacterSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -114,15 +111,16 @@ public class CharacterHelper {
             public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                call.clone();
             }
         });
     }
 
     public interface SendCharacterData {
-        List<Series> sendSeries(List<Series> series);
+        List<Series> sendCharacterSeries(List<Series> series);
 
-        List<Comic> sendComics(List<Comic> comics);
+        List<Comic> sendCharacterComics(List<Comic> comics);
 
-        List<Event> sendEvents(List<Event> events);
+        List<Event> sendCharacterEvents(List<Event> events);
     }
 }

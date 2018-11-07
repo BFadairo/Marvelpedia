@@ -15,18 +15,18 @@ import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Event;
+import com.example.android.marvelpedia.model.Series;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
-    private final String CHARACTER_EXTRAS = "character_extras";
-    private final String COMIC_EXTRAS = "comic_extras";
-    private final String EVENT_EXTRAS = "event_extras";
+    private String CHARACTER_EXTRAS, COMIC_EXTRAS, EVENT_EXTRAS, SERIES_EXTRAS;
     public String imagePath;
     private Character passedCharacter;
     private Comic passedComic;
     private Event passedEvent;
+    private Series passedSeries;
     private ImageView detailImage;
     private TextView detailDescription;
 
@@ -40,14 +40,19 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         //Get the passed arguments
         Bundle passedArgs = getArguments();
+        retrieveStrings();
 
-        if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
-            passedCharacter = passedArgs.getParcelable(CHARACTER_EXTRAS);
-        } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
-            passedComic = passedArgs.getParcelable(COMIC_EXTRAS);
-            Log.v(LOG_TAG, passedComic.getTitle());
-        } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
-            passedEvent = passedArgs.getParcelable(EVENT_EXTRAS);
+        if (passedArgs != null) {
+            if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
+                passedCharacter = passedArgs.getParcelable(CHARACTER_EXTRAS);
+            } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
+                passedComic = passedArgs.getParcelable(COMIC_EXTRAS);
+                Log.v(LOG_TAG, passedComic.getTitle());
+            } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
+                passedEvent = passedArgs.getParcelable(EVENT_EXTRAS);
+            } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
+                passedSeries = passedArgs.getParcelable(SERIES_EXTRAS);
+            }
         }
 
         //Get a reference to the description view
@@ -74,6 +79,8 @@ public class DetailFragment extends Fragment {
             imagePath = passedComic.getImageUrl();
         } else if (passedEvent != null) {
             imagePath = passedEvent.getImageUrl();
+        } else if (passedSeries != null) {
+            imagePath = passedEvent.getImageUrl();
         }
 
         Picasso.get().load(imagePath).fit().into(detailImage);
@@ -87,5 +94,13 @@ public class DetailFragment extends Fragment {
             String comicDescription = passedComic.getDescription();
             detailDescription.setText(comicDescription);
         }
+    }
+
+    private void retrieveStrings() {
+        //Retrieve the strings for the extras
+        CHARACTER_EXTRAS = getResources().getString(R.string.character_extras);
+        COMIC_EXTRAS = getResources().getString(R.string.comic_extras);
+        EVENT_EXTRAS = getResources().getString(R.string.event_extras);
+        SERIES_EXTRAS = getResources().getString(R.string.series_extras);
     }
 }

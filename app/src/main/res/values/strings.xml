@@ -23,6 +23,7 @@
     <string name="character_extras">character_extras</string>
     <string name="comic_extras">comic_extras</string>
     <string name="event_extras">event_extras</string>
+    <string name="series_extras">series_extras</string>
 
     <!-- Strings related to fragment tags -->
     <string name="character_tag">Character</string>

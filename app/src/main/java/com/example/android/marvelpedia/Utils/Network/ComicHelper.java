@@ -46,7 +46,7 @@ public class ComicHelper {
                     mCharacters.clear();
                     characterData = response.body().getData();
                     mCharacters = characterData.getResults();
-                    comicInterface.sendCharacterComics(mCharacters);
+                    comicInterface.sendComicCharacters(mCharacters);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -71,7 +71,7 @@ public class ComicHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    comicInterface.sendEventComics(mEvents);
+                    comicInterface.sendComicEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -96,7 +96,7 @@ public class ComicHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    comicInterface.sendSeriesComics(mSeries);
+                    comicInterface.sendComicSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -110,10 +110,10 @@ public class ComicHelper {
     }
 
     public interface SendComicData {
-        List<Character> sendCharacterComics(List<Character> characters);
+        List<Character> sendComicCharacters(List<Character> characters);
 
-        List<Event> sendEventComics(List<Event> events);
+        List<Event> sendComicEvents(List<Event> events);
 
-        List<Series> sendSeriesComics(List<Series> series);
+        List<Series> sendComicSeries(List<Series> series);
     }
 }

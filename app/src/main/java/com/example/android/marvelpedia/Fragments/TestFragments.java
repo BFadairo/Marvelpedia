@@ -76,7 +76,7 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
 
-        /*if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
+        if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
             retrievedItem = passedArgs.getParcelable(CHARACTER_EXTRAS);
         } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
             retrievedItem = passedArgs.getParcelable(COMIC_EXTRAS);
@@ -84,7 +84,7 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
             retrievedItem = passedArgs.getParcelable(EVENT_EXTRAS);
         } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
             retrievedItem = passedArgs.getParcelable(SERIES_EXTRAS);
-        }*/
+        }
 
         Log.v(LOG_TAG, (retrievedItem instanceof Character) + "Char");
         Log.v(LOG_TAG, (retrievedItem instanceof Comic) + "Comic");
@@ -97,7 +97,6 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         if (passedArgs != null) {
             if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
                 if (retrievedItem instanceof Character) {
-                    retrievedItem = passedArgs.getParcelable(CHARACTER_EXTRAS);
                     Log.v(LOG_TAG, "Character Is Object");
                     Log.v(LOG_TAG, this.getTag());
                     populateUi();
@@ -123,7 +122,6 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
                 }
             } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
                 if (retrievedItem instanceof Comic) {
-                    retrievedItem = passedArgs.getParcelable(COMIC_EXTRAS);
                     Log.v(LOG_TAG, "Comic Is Object");
                     populateUi();
                     switch (this.getTag()) {
@@ -145,7 +143,6 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
                 if (retrievedItem instanceof Event) {
                     Log.v(LOG_TAG, "Event Is Object");
                     Event currentEvent = (Event) retrievedItem;
-                    retrievedItem = passedArgs.getParcelable(EVENT_EXTRAS);
                     populateUi();
                     switch (this.getTag()) {
                         case "Character":
@@ -164,7 +161,6 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
                 }
             } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
                 if (retrievedItem instanceof Series) {
-                    retrievedItem = passedArgs.getParcelable(SERIES_EXTRAS);
                     Series currentSeries = (Series) retrievedItem;
                     Log.v(LOG_TAG, "Series is Object");
                     populateUi();

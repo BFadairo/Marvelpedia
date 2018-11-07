@@ -57,7 +57,7 @@ public class SeriesHelper {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone();
+                call.clone().enqueue(this);
             }
         });
     }
@@ -85,7 +85,7 @@ public class SeriesHelper {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone();
+                call.clone().enqueue(this);
             }
         });
     }
@@ -113,7 +113,7 @@ public class SeriesHelper {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone();
+                call.clone().enqueue(this);
             }
         });
     }

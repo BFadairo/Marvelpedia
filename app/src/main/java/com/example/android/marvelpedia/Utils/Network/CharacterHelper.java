@@ -58,7 +58,7 @@ public class CharacterHelper {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone();
+                call.clone().enqueue(this);
             }
         });
     }
@@ -85,7 +85,8 @@ public class CharacterHelper {
             public void onFailure(Call<BaseJsonResponse<Comic>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
-                call.clone();
+                Log.v(LOG_TAG, "Attempting Call Again");
+                call.clone().enqueue(this);
             }
         });
     }
@@ -111,7 +112,8 @@ public class CharacterHelper {
             public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
-                call.clone();
+                Log.v(LOG_TAG, "Attempting Call Again");
+                call.clone().enqueue(this);
             }
         });
     }

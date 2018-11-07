@@ -55,6 +55,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                call.clone().enqueue(this);
             }
         });
     }
@@ -80,6 +81,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Event>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                call.clone().enqueue(this);
             }
         });
     }
@@ -105,6 +107,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                call.clone().enqueue(this);
             }
         });
     }

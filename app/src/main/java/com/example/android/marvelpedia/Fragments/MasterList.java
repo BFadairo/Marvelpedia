@@ -72,8 +72,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
         if (savedInstanceState != null) {
             mCharacters = savedInstanceState.getParcelableArrayList(SAVED_CHARACTERS);
-            mCharacterAdapter.setCharacterData(mCharacters);
             populateUi();
+            mCharacterAdapter.setCharacterData(mCharacters);
         } else {
             //Used to retrieve the query and update the search results from the SearchView
             getQueryFromSearchBar();

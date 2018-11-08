@@ -55,19 +55,15 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
             postponeEnterTransition();
         }
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        //get the firebase instance
+        setupFirebaseInstance();
+        //Retrieve the team members currently stored in the database
         retrieveTeamMembers();
 
 
         //Receive the extras that were passed through the intent
         //and put them into a bundle
         Bundle argsToPass = getIntent().getExtras();
-
-        if (argsToPass.getParcelable("character_extras") != null) {
-            floatingActionButton.setVisibility(View.VISIBLE);
-        } else {
-            floatingActionButton.setVisibility(View.GONE);
-        }
 
         //Retrieve the string values for all required fields
         retrieveStrings();
@@ -78,34 +74,7 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
         setupCharacterTestFragment(argsToPass);
         setupEventTestFragment(argsToPass);
         setupSeriesTestFragment(argsToPass);
-
-
-        //Create a new Detail Fragment
-        detailFragment = new DetailFragment();
-        //Set the arguments for the detail fragment
-        detailFragment.setArguments(argsToPass);
-
-        /*
-        //Create a new Comic Fragment
-        comicFragment = new ComicFragment();
-        //Set the arguments for the comic fragment
-        comicFragment.setArguments(argsToPass);
-
-        //Create a new Event Fragment
-        eventFragment = new EventFragment();
-        //Set the arguments for the event fragment
-        eventFragment.setArguments(argsToPass);
-
-        /*getSupportFragmentManager().beginTransaction()
-                .add(R.id.comic_container, comicFragment, "Comic")
-                .commit();*/
-
-                /*
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.event_container, eventFragment, "Event")
-                .commit();
-                */
-
+        setupDetailInfoFragment(argsToPass);
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.detail_information_container, detailFragment)
@@ -142,6 +111,11 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
         seriesTestFragments.setArguments(passedArgs);
     }
 
+    private void setupDetailInfoFragment(Bundle passedArgs) {
+        detailFragment = new DetailFragment();
+        detailFragment.setArguments(passedArgs);
+    }
+
     private void retrieveStrings() {
         //Retrieve the string values for the extras
         character_extras = getResources().getString(R.string.character_extras);
@@ -158,20 +132,17 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
         if (teamMembers.size() <= 5) {
             Log.v(LOG_TAG, teamMembers.size() + "Size");
             teamReference.child(character.getId().toString()).setValue(character);
+            Toast.makeText(this, "Adding Character to Team", Toast.LENGTH_SHORT).show();
             for (int i = 0; i < teamMembers.size(); i++) {
                 if (character.getId().equals(teamMembers.get(i).getId())) {
                     //teamMembers.remove(i);
                     teamReference.child(character.getId().toString()).removeValue();
                     Toast.makeText(this, "Removing Character from Team", Toast.LENGTH_SHORT).show();
-                } else {
-                    //teamMembers.add(character);
-                    Toast.makeText(this, "Adding Character to Team", Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
             Toast.makeText(this, "Already have 5 Team Members, Delete One", Toast.LENGTH_SHORT).show();
         }
-        updateFloatingActionButtonDrawable(character);
         Log.v(LOG_TAG, "Writing to Database");
     }
 
@@ -184,6 +155,7 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Character currentCharacter = postSnapshot.getValue(Character.class);
                     teamMembers.add(currentCharacter);
+                    //updateFloatingActionButtonDrawable(currentCharacter);
                     Log.v(LOG_TAG, postSnapshot.getKey());
                 }
             }
@@ -200,7 +172,6 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
     }
 
     private void setupFloatingActionButton(final Character character) {
-        setupFirebaseInstance();
         updateFloatingActionButtonDrawable(character);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

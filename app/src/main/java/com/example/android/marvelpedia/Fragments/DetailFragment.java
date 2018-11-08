@@ -44,7 +44,6 @@ public class DetailFragment extends Fragment {
 
         //Get a reference to the description view
         detailDescription = rootView.findViewById(R.id.detail_description);
-        setExtraDetailInformation();
 
         //Get a reference to the imageView in the layout
         detailImage = rootView.findViewById(R.id.image_detail);
@@ -66,6 +65,7 @@ public class DetailFragment extends Fragment {
         //This is information passed from the MasterList fragment
         //Is only used to retrieve and set the image on the detailActivity
         //TODO: Change this to account for different types
+        setExtraDetailInformation();
         setDetailImage();
 
         //Return the rootView
@@ -89,6 +89,7 @@ public class DetailFragment extends Fragment {
     private void setExtraDetailInformation() {
         if (passedCharacter != null) {
             String characterBio = passedCharacter.getDescription();
+            Log.v(LOG_TAG, characterBio);
             detailDescription.setText(characterBio);
         } else if (passedComic != null) {
             String comicDescription = passedComic.getDescription();

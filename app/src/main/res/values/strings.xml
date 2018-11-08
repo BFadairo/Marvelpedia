@@ -5,6 +5,7 @@
     <string name="search_bar_hint">Enter search term</string>
     <string name="master_list_character_hint">Character\'s Name</string>
     <string name="comic_title_hint">Comic Title</string>
+    <string name="team_name_hint">Insert Team Name</string>
 
     <!-- Strings related to content transitions -->
     <string name="image_transition">Image Transition</string>

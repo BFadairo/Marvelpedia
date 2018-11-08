@@ -70,4 +70,9 @@ public interface GetMarvelData {
     @GET("series/{seriesId}/events")
     Call<BaseJsonResponse<Event>> getSeriesEvents(@Path("seriesId") int seriesId, @Query("ts") String timeStamp,
                                                   @Query("apikey") String apiKey, @Query("hash") String privateKey);
+
+    @GET("comics")
+    Call<BaseJsonResponse<Comic>> getTeamComics(@Query("ts") String timeStamp,
+                                                @Query("apikey") String apiKey, @Query("hash") String privateKey,
+                                                @Query("sharedAppearances") String characterIds);
 }

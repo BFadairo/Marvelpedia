@@ -1,39 +1,73 @@
 package com.example.android.marvelpedia;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
-import com.example.android.marvelpedia.Fragments.CharacterFragment;
-import com.example.android.marvelpedia.Fragments.ComicFragment;
 import com.example.android.marvelpedia.Fragments.DetailFragment;
-import com.example.android.marvelpedia.Fragments.EventFragment;
 import com.example.android.marvelpedia.Fragments.TestFragments;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Event;
 import com.example.android.marvelpedia.model.Series;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class DetailActivity extends AppCompatActivity implements ComicFragment.SendComicData {
+import java.util.ArrayList;
+import java.util.List;
 
-    private ComicFragment comicFragment;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class DetailActivity extends AppCompatActivity implements TestFragments.AddToDatabase {
+
+    private final String LOG_TAG = DetailActivity.class.getSimpleName();
     private DetailFragment detailFragment;
-    public String comic_tag, event_tag, series_tag;
-    private CharacterFragment characterFragment;
-    private EventFragment eventFragment;
+    @BindView(R.id.floating_action_button_member_add)
+    FloatingActionButton floatingActionButton;
     private TestFragments<Character> characterTestFragments;
     private TestFragments<Event> eventTestFragments;
     private TestFragments<Comic> comicTestFragments;
     private TestFragments<Series> seriesTestFragments;
+    private String comic_tag, event_tag, series_tag;
     private String character_extras, comic_extras, event_extras;
+    private List<Character> teamMembers = new ArrayList<>();
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference teamReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        teamMembers.clear();
+
+        ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+        }
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        retrieveTeamMembers();
+
 
         //Receive the extras that were passed through the intent
         //and put them into a bundle
         Bundle argsToPass = getIntent().getExtras();
+
+        if (argsToPass.getParcelable("character_extras") != null) {
+            floatingActionButton.setVisibility(View.VISIBLE);
+        } else {
+            floatingActionButton.setVisibility(View.GONE);
+        }
 
         //Retrieve the string values for all required fields
         retrieveStrings();
@@ -81,23 +115,6 @@ public class DetailActivity extends AppCompatActivity implements ComicFragment.S
                 .commit();
     }
 
-    @Override
-    public void sendComic(Comic comic) {
-        Bundle bundle = new Bundle();
-        //TODO Add string for this
-        bundle.putParcelable(comic_extras, comic);
-        detailFragment = new DetailFragment();
-        detailFragment.setArguments(bundle);
-
-        characterFragment = new CharacterFragment();
-        characterFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.comic_container, characterFragment)
-                .replace(R.id.detail_information_container, detailFragment)
-                .commit();
-        setTitle(comic.getTitle());
-    }
-
     private void setupActivityTitle() {
         if (getIntent().getParcelableExtra(character_extras) != null) {
             Character passedCharacter = getIntent().getExtras().getParcelable("character_extras");
@@ -135,6 +152,94 @@ public class DetailActivity extends AppCompatActivity implements ComicFragment.S
         comic_tag = getResources().getString(R.string.comic_tag);
         event_tag = getResources().getString(R.string.event_tag);
         series_tag = getResources().getString(R.string.series_tag);
+    }
 
+    private void addTeamMember(Character character) {
+        if (teamMembers.size() <= 5) {
+            Log.v(LOG_TAG, teamMembers.size() + "Size");
+            teamReference.child(character.getId().toString()).setValue(character);
+            for (int i = 0; i < teamMembers.size(); i++) {
+                if (character.getId().equals(teamMembers.get(i).getId())) {
+                    //teamMembers.remove(i);
+                    teamReference.child(character.getId().toString()).removeValue();
+                    Toast.makeText(this, "Removing Character from Team", Toast.LENGTH_SHORT).show();
+                } else {
+                    //teamMembers.add(character);
+                    Toast.makeText(this, "Adding Character to Team", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            Toast.makeText(this, "Already have 5 Team Members, Delete One", Toast.LENGTH_SHORT).show();
+        }
+        updateFloatingActionButtonDrawable(character);
+        Log.v(LOG_TAG, "Writing to Database");
+    }
+
+    private void retrieveTeamMembers() {
+        teamReference = firebaseDatabase.getReference();
+        teamReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                teamMembers.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Character currentCharacter = postSnapshot.getValue(Character.class);
+                    teamMembers.add(currentCharacter);
+                    Log.v(LOG_TAG, postSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(LOG_TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    private void setupFirebaseInstance() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+    }
+
+    private void setupFloatingActionButton(final Character character) {
+        setupFirebaseInstance();
+        updateFloatingActionButtonDrawable(character);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addTeamMember(character);
+            }
+        });
+    }
+
+    private void updateFloatingActionButtonDrawable(Character character) {
+        for (int i = 0; i < teamMembers.size(); i++) {
+            if (character.getId().equals(teamMembers.get(i).getId())) {
+                floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_remove_black_24dp));
+            } else {
+                floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp));
+            }
+        }
+    }
+
+    @Override
+    public void addToDb(Character character) {
+        setupFloatingActionButton(character);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(LOG_TAG, "On Pause Called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(LOG_TAG, "On Stop Called");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.v(LOG_TAG, "On SavedInstance called");
     }
 }

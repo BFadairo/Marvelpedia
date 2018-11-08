@@ -1,6 +1,7 @@
 package com.example.android.marvelpedia.Adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
             characterImage.setScaleType(ImageView.ScaleType.FIT_XY);
             //TODO: Get a Marvel Image for this
         } else {
+            checkSDKVersionAndSetTransitionName(characterImage, position, LOG_TAG);
             characterImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
             String thumbnailExtension = charThumbnail.getExtension();
             String thumbnailPath = charThumbnail.getPath();
@@ -72,8 +74,15 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
         notifyDataSetChanged();
     }
 
+    private void checkSDKVersionAndSetTransitionName(ImageView transitionView, int position, String transitionName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            transitionView.setTransitionName(transitionName + position);
+            Log.v(LOG_TAG, transitionView.getTransitionName());
+        }
+    }
+
     public interface CharacterAdapterOnClick {
-        void onClick(Character character);
+        void onClick(Character character, ImageView view);
     }
 
     @Override
@@ -98,7 +107,7 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             Character character = mCharacters.get(adapterPosition);
-            charClickHandler.onClick(character);
+            charClickHandler.onClick(character, mCharacterImage);
         }
     }
 }

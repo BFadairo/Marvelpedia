@@ -42,6 +42,14 @@ public class DetailFragment extends Fragment {
         Bundle passedArgs = getArguments();
         retrieveStrings();
 
+        //Get a reference to the description view
+        detailDescription = rootView.findViewById(R.id.detail_description);
+        setExtraDetailInformation();
+
+        //Get a reference to the imageView in the layout
+        detailImage = rootView.findViewById(R.id.image_detail);
+
+
         if (passedArgs != null) {
             if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
                 passedCharacter = passedArgs.getParcelable(CHARACTER_EXTRAS);
@@ -54,14 +62,6 @@ public class DetailFragment extends Fragment {
                 passedSeries = passedArgs.getParcelable(SERIES_EXTRAS);
             }
         }
-
-        //Get a reference to the description view
-        detailDescription = rootView.findViewById(R.id.detail_description);
-        setExtraDetailInformation();
-
-        //Get a reference to the imageView in the layout
-        detailImage = rootView.findViewById(R.id.image_detail);
-
         //Retrieve the character details
         //This is information passed from the MasterList fragment
         //Is only used to retrieve and set the image on the detailActivity

@@ -25,6 +25,7 @@
             android:name=".DetailActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/DetailTheme" />
+        <activity android:name=".TeamActivity" />
 
     </application>
 

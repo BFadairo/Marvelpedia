@@ -1,6 +1,7 @@
 package com.example.android.marvelpedia.Adapters;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -62,6 +63,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
         //TextView comicTitle = viewHolder.mComicName;
 
 
+
         if (currentItemThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.ic_launcher).into(itemImage);
@@ -74,15 +76,19 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
             if (currentItem instanceof Character) {
+                checkSDKVersionAndSetTransitionName(itemImage, position, "Character");
                 ((Character) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Character) currentItem).getImageUrl());
             } else if (currentItem instanceof Comic) {
+                checkSDKVersionAndSetTransitionName(itemImage, position, "Comic");
                 ((Comic) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Comic) currentItem).getImageUrl());
             } else if (currentItem instanceof Event) {
+                checkSDKVersionAndSetTransitionName(itemImage, position, "Event");
                 ((Event) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Event) currentItem).getImageUrl());
             } else if (currentItem instanceof Series) {
+                checkSDKVersionAndSetTransitionName(itemImage, position, "Series");
                 ((Series) currentItem).setImageUrl(combinedPath);
 
             }
@@ -108,12 +114,19 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
         notifyDataSetChanged();
     }
 
-    public interface ItemOnClick<T> {
-        void onClick(T item);
+    private void checkSDKVersionAndSetTransitionName(ImageView transitionView, int position, String transitionName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            transitionView.setTransitionName(transitionName + position);
+            Log.v(LOG_TAG, transitionView.getTransitionName());
+        }
     }
 
     public interface receiveData<T> {
         List<T> setData(List<T> items);
+    }
+
+    public interface ItemOnClick<T> {
+        void onClick(T item, ImageView transitionView);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -133,7 +146,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             T item = mItems.get(adapterPosition);
-            itemOnClick.onClick(item);
+            itemOnClick.onClick(item, mItemImage);
         }
     }
 }

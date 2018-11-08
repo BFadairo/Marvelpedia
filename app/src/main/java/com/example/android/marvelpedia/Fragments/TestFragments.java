@@ -1,5 +1,6 @@
 package com.example.android.marvelpedia.Fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.marvelpedia.Adapters.TestAdapter;
@@ -29,19 +32,24 @@ import com.example.android.marvelpedia.model.Series;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClick, CharacterHelper.SendCharacterData,
         ComicHelper.SendComicData, EventHelper.SendEventData, SeriesHelper.SendSeriesData {
 
     private final static String LOG_TAG = TestFragments.class.getSimpleName();
     private String CHARACTER_EXTRAS, COMIC_EXTRAS, EVENT_EXTRAS, SERIES_EXTRAS, CHARACTER_TAG, COMIC_TAG,
             EVENT_TAG, SERIES_TAG;
-    private RecyclerView itemRecyclerView;
+    @BindView(R.id.test_recycler_view)
+    RecyclerView itemRecyclerView;
     private Parcelable retrievedItem;
     private TestAdapter<Comic> mComicAdapter;
     private TestAdapter<Event> mEventAdapter;
     private TestAdapter<Series> mSeriesAdapter;
     private TestAdapter<Character> mCharacterAdapter;
-    private TextView itemDescription, itemDetailHeader;
+    @BindView(R.id.test_item_header)
+    TextView itemDetailHeader;
     private RecyclerView.LayoutManager layoutManager;
     private List<Comic> mComics = new ArrayList<>();
     private List<Character> mCharacters = new ArrayList<>();
@@ -52,26 +60,37 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
     private EventHelper eventHelper;
     private SeriesHelper seriesHelper;
     private FragmentManager fragmentManager;
+    private AddToDatabase characterWriter;
 
     public TestFragments() {
-
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail_test_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_detail_test_list, container, false);
 
         retrieveStrings();
+        ButterKnife.bind(this, rootView);
+
+        characterWriter = (AddToDatabase) getActivity();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    rootView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().startPostponedEnterTransition();
+                    return true;
+                }
+            });
+        }
+
         //Setup the helpers for each class (contain the API calls)
         characterHelper = new CharacterHelper(this);
         comicHelper = new ComicHelper(this);
         eventHelper = new EventHelper(this);
         seriesHelper = new SeriesHelper(this);
-
-        //Get the reference to the item's recycler view
-        itemRecyclerView = rootView.findViewById(R.id.test_recycler_view);
-        itemDetailHeader = rootView.findViewById(R.id.test_item_header);
 
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
@@ -97,8 +116,10 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         if (passedArgs != null) {
             if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
                 if (retrievedItem instanceof Character) {
+                    Character currentCharacter = (Character) retrievedItem;
                     Log.v(LOG_TAG, "Character Is Object");
                     Log.v(LOG_TAG, this.getTag());
+                    characterWriter.addToDb(currentCharacter);
                     populateUi();
 
                     switch (this.getTag()) {
@@ -227,9 +248,13 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
     }
 
     @Override
-    public void onClick(Object item) {
+    public void onClick(Object item, ImageView transitionView) {
         Bundle argsToPass = new Bundle();
         if (item instanceof Comic) {
+            String transitionName;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                transitionName = transitionView.getTransitionName();
+            }
             TestFragments<Character> newCharacterFragment = new TestFragments<>();
             TestFragments<Event> newEventFragment = new TestFragments<>();
             TestFragments<Series> newSeriesFragment = new TestFragments<>();
@@ -241,13 +266,15 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
             newEventFragment.setArguments(argsToPass);
             newSeriesFragment.setArguments(argsToPass);
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction
-                    .replace(R.id.detail_information_container, newDetailFragment)
-                    .replace(R.id.comic_container, newCharacterFragment, CHARACTER_TAG)
-                    .replace(R.id.event_container, newEventFragment, EVENT_TAG)
-                    .replace(R.id.story_container, newSeriesFragment, SERIES_TAG)
-                    //.addSharedElement(getActivity().findViewById(R.id.image_detail), getString(R.string.image_transition))
-                    .commit();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                transaction
+                        .addSharedElement(transitionView, getString(R.string.image_transition))
+                        .replace(R.id.detail_information_container, newDetailFragment)
+                        .replace(R.id.comic_container, newCharacterFragment, CHARACTER_TAG)
+                        .replace(R.id.event_container, newEventFragment, EVENT_TAG)
+                        .replace(R.id.story_container, newSeriesFragment, SERIES_TAG)
+                        .commit();
+            }
         } else if (item instanceof Event) {
             Log.v(LOG_TAG, ((Event) item).getEventTitle());
         } else if (item instanceof Series) {
@@ -268,6 +295,10 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         COMIC_TAG = getResources().getString(R.string.comic_tag);
         EVENT_TAG = getResources().getString(R.string.event_tag);
         SERIES_TAG = getResources().getString(R.string.series_tag);
+    }
+
+    public interface AddToDatabase {
+        void addToDb(Character character);
     }
 
     @Override

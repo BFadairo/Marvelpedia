@@ -26,8 +26,13 @@
     <string name="series_extras">series_extras</string>
 
     <!-- Strings related to fragment tags -->
+    <string name="master_tag">MasterList</string>
     <string name="character_tag">Character</string>
     <string name="comic_tag">Comic</string>
     <string name="event_tag">Event</string>
     <string name="series_tag">Series</string>
+
+    <!-- Strings related to menus -->
+    <string name="search">Search</string>
+    <string name="team">Team</string>
 </resources>

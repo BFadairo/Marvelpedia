@@ -1,8 +1,10 @@
 package com.example.android.marvelpedia.Fragments;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
 import com.example.android.marvelpedia.BuildConfig;
@@ -35,15 +38,18 @@ import retrofit2.Response;
 public class MasterList extends Fragment implements MasterListCharacterAdapter.CharacterAdapterOnClick {
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
-    private final static String CHARACTER_EXTRAS = "character_extras";
+    private final String CHARACTER_EXTRAS = "character_extras";
+    private final String SAVED_CHARACTERS = "characters";
     private String ATTRIBUTION_TEXT;
     private RecyclerView characterRecyclerView;
     private android.support.v7.widget.SearchView marvelSearchView;
+    private ImageView dataImage;
     private CharSequence marvelSearchTerm;
     private MasterListCharacterAdapter mCharacterAdapter;
     private Data<Character> characterData;
     private List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
+    private Bundle savedCharacters;
     private int mColumnCount = 3;
 
     /**
@@ -61,8 +67,17 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         // Get a reference to the RecyclerView in the fragment_master_list xml layout file
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
         marvelSearchView = rootView.findViewById(R.id.search_view_text);
-        //Used to retrieve the query and update the search results from the SearchView
-        getQueryFromSearchBar();
+
+        savedCharacters = new Bundle();
+
+        if (savedInstanceState != null) {
+            mCharacters = savedInstanceState.getParcelableArrayList(SAVED_CHARACTERS);
+            mCharacterAdapter.setCharacterData(mCharacters);
+            populateUi();
+        } else {
+            //Used to retrieve the query and update the search results from the SearchView
+            getQueryFromSearchBar();
+        }
 
         // Return the root view
         return rootView;
@@ -120,12 +135,12 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         characterRecyclerView.setLayoutManager(layoutManager);
     }
 
-    @Override
+    /*@Override
     public void onClick(Character character) {
         Intent characterActivity = new Intent(getContext(), DetailActivity.class);
         characterActivity.putExtra(CHARACTER_EXTRAS, character);
         startActivity(characterActivity);
-    }
+    }*/
 
     private void getQueryFromSearchBar() {
         marvelSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -143,4 +158,45 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
             }
         });
     }
+
+
+    @Override
+    public void onClick(Character character, ImageView view) {
+        Intent characterActivity = new Intent(getContext(), DetailActivity.class);
+        characterActivity.putExtra(CHARACTER_EXTRAS, character);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Log.v(LOG_TAG, view.getTransitionName());
+            characterActivity.putExtra("transition_name", view.getTransitionName());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName());
+            startActivity(characterActivity, options.toBundle());
+        } else {
+            startActivity(characterActivity);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.v(LOG_TAG, "Saving Character List");
+        outState.putParcelableArrayList(SAVED_CHARACTERS, (ArrayList<Character>) mCharacters);
+    }
+
+    /*@Override
+    public void onResume() {
+        Log.v(LOG_TAG, "On Resume Called");
+        if (!(mCharacters.isEmpty()) && mCharacters != null) {
+            mCharacters = savedCharacters.getParcelable(SAVED_CHARACTERS);
+            //mCharacterAdapter.setCharacterData(mCharacters);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.v(LOG_TAG, "On Pause Called");
+        savedCharacters.putParcelableArrayList(SAVED_CHARACTERS, (ArrayList<Character>) mCharacters);
+        super.onPause();
+    }*/
+
+
 }

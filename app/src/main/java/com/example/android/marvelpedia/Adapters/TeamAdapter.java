@@ -17,13 +17,11 @@ import java.util.List;
 
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
 
-    private final String portrait_uncanny = "portrait_uncanny";
-    private Context mContext;
     private List<Character> mCharacters;
 
 
     public TeamAdapter(Context context, List<Character> characters) {
-        this.mContext = context;
+        Context mContext = context;
         this.mCharacters = characters;
     }
 
@@ -47,6 +45,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
             String thumbnailExtension = currentMemberThumbnail.getExtension();
             String thumbnailPath = currentMemberThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            String portrait_uncanny = "portrait_uncanny";
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
 
             Picasso.get().load(combinedPath).into(memberImage);
@@ -65,11 +64,11 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final View mView;
-        public final ImageView mMemberImage;
+        final View mView;
+        final ImageView mMemberImage;
         //public final TextView mComicName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mMemberImage = view.findViewById(R.id.team_member_image);

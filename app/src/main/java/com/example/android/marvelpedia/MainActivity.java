@@ -27,8 +27,6 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     @BindString(R.string.master_tag)
     String master_tag;
-    private MasterList masterList;
-    private TeamFragment teamFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMasterList() {
-        masterList = new MasterList();
+        MasterList masterList = new MasterList();
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.master_list_container, masterList, master_tag)
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupTeamFragment() {
-        teamFragment = new TeamFragment();
+        TeamFragment teamFragment = new TeamFragment();
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.master_list_container, teamFragment)

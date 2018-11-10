@@ -19,14 +19,11 @@ import java.util.List;
 public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetailAdapter.ViewHolder> {
 
     private final static String LOG_TAG = CharacterDetailAdapter.class.getSimpleName();
-    private final String NO_IMAGE = "no_image_available";
     private final CharacterOnClick characterClick;
-    private final String portrait_uncanny = "portrait_uncanny";
     private List<Character> mCharacters;
-    private Context mContext;
 
     public CharacterDetailAdapter(Context context, List<Character> characters, CharacterOnClick onClick) {
-        mContext = context;
+        Context mContext = context;
         mCharacters = characters;
         characterClick = onClick;
     }
@@ -48,6 +45,7 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
 
         Thumbnail currentComicThumbnail = currentCharacter.getThumbnail();
 
+        String NO_IMAGE = "no_image_available";
         if (currentComicThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.ic_launcher).into(comicImage);
@@ -58,6 +56,7 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
             String thumbnailExtension = currentComicThumbnail.getExtension();
             String thumbnailPath = currentComicThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            String portrait_uncanny = "portrait_uncanny";
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
             currentCharacter.setImageUrl(combinedPath);
             Log.v(LOG_TAG, currentCharacter.getImageUrl());
@@ -86,11 +85,11 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final View mView;
-        public final ImageView mCharacterImage;
+        final View mView;
+        final ImageView mCharacterImage;
         //public final TextView mComicName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mCharacterImage = view.findViewById(R.id.item_image);

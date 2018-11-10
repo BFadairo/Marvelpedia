@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Url implements Serializable {
+class Url implements Serializable {
 
     @SerializedName("type")
     @Expose

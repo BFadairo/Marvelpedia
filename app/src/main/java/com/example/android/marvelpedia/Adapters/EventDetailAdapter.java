@@ -19,14 +19,12 @@ import java.util.List;
 public class EventDetailAdapter extends RecyclerView.Adapter<EventDetailAdapter.ViewHolder> {
 
     private final static String LOG_TAG = EventOnClick.class.getSimpleName();
-    private final String NO_IMAGE = "no_image_available";
     private final EventOnClick eventClick;
-    private final String portrait_uncanny = "portrait_uncanny";
     private List<Event> mEvents;
-    private Context mContext;
 
     public EventDetailAdapter(Context context, List<Event> events, EventOnClick onClick) {
-        mContext = context;
+        //noinspection UnnecessaryLocalVariable,UnnecessaryLocalVariable,UnnecessaryLocalVariable
+        @SuppressWarnings("UnnecessaryLocalVariable") Context mContext = context;
         mEvents = events;
         eventClick = onClick;
     }
@@ -48,6 +46,7 @@ public class EventDetailAdapter extends RecyclerView.Adapter<EventDetailAdapter.
 
         Thumbnail currentEventThumbnail = currentEvent.getThumbnails();
 
+        String NO_IMAGE = "no_image_available";
         if (currentEventThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.ic_launcher).into(comicImage);
@@ -58,6 +57,7 @@ public class EventDetailAdapter extends RecyclerView.Adapter<EventDetailAdapter.
             String thumbnailExtension = currentEventThumbnail.getExtension();
             String thumbnailPath = currentEventThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            String portrait_uncanny = "portrait_uncanny";
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
             currentEvent.setImageUrl(combinedPath);
             Log.v(LOG_TAG, currentEvent.getImageUrl());
@@ -86,11 +86,11 @@ public class EventDetailAdapter extends RecyclerView.Adapter<EventDetailAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final View mView;
-        public final ImageView mEventImage;
+        final View mView;
+        final ImageView mEventImage;
         //public final TextView mComicName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mEventImage = view.findViewById(R.id.item_image);

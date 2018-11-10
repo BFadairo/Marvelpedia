@@ -14,6 +14,7 @@
 
     <!-- Strings related to content descriptions -->
     <string name="detail_activity_description">Character Image</string>
+    <string name="team_member_description">Team Member</string>
     <string name="detail_frag_list_image_description">Item Detail Image</string>
     <string name="detail_fragment_image_description">Item Detail Image</string>
 

@@ -28,7 +28,7 @@ public class CharacterHelper {
     private List<Event> mEvents = new ArrayList<>();
     private List<Comic> mComics = new ArrayList<>();
     private List<Series> mSeries = new ArrayList<>();
-    private SendCharacterData mCharacterInterface;
+    private final SendCharacterData mCharacterInterface;
 
     public CharacterHelper(SendCharacterData characterInterface) {
         mCharacterInterface = characterInterface;
@@ -119,10 +119,10 @@ public class CharacterHelper {
     }
 
     public interface SendCharacterData {
-        List<Series> sendCharacterSeries(List<Series> series);
+        void sendCharacterSeries(List<Series> series);
 
-        List<Comic> sendCharacterComics(List<Comic> comics);
+        void sendCharacterComics(List<Comic> comics);
 
-        List<Event> sendCharacterEvents(List<Event> events);
+        void sendCharacterEvents(List<Event> events);
     }
 }

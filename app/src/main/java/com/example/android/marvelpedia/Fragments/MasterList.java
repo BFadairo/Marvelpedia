@@ -38,7 +38,6 @@ import retrofit2.Response;
 public class MasterList extends Fragment implements MasterListCharacterAdapter.CharacterAdapterOnClick {
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
-    private final String CHARACTER_EXTRAS = "character_extras";
     private final String SAVED_CHARACTERS = "characters";
     private String ATTRIBUTION_TEXT;
     private RecyclerView characterRecyclerView;
@@ -48,9 +47,6 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     private MasterListCharacterAdapter mCharacterAdapter;
     private Data<Character> characterData;
     private static List<Character> mCharacters = new ArrayList<>();
-    private RecyclerView.LayoutManager layoutManager;
-    private static Bundle savedCharacters;
-    private int mColumnCount = 3;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,7 +64,7 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
         marvelSearchView = rootView.findViewById(R.id.search_view_text);
 
-        savedCharacters = new Bundle();
+        Bundle savedCharacters = new Bundle();
 
         if (savedInstanceState != null) {
             mCharacters = savedInstanceState.getParcelableArrayList(SAVED_CHARACTERS);
@@ -131,7 +127,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         characterRecyclerView.setAdapter(mCharacterAdapter);
 
         //Create a GridLayoutManager
-        layoutManager = new GridLayoutManager(getContext(), mColumnCount);
+        int mColumnCount = 3;
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), mColumnCount);
         characterRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -163,6 +160,7 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     @Override
     public void onClick(Character character, ImageView view) {
         Intent characterActivity = new Intent(getContext(), DetailActivity.class);
+        String CHARACTER_EXTRAS = "character_extras";
         characterActivity.putExtra(CHARACTER_EXTRAS, character);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Log.v(LOG_TAG, view.getTransitionName());

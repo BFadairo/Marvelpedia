@@ -20,13 +20,11 @@ import java.util.List;
 public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListCharacterAdapter.ViewHolder> {
 
     private final static String LOG_TAG = MasterListCharacterAdapter.class.getSimpleName();
-    private final String NO_IMAGE = "no_image_available";
     private List<Character> mCharacters;
     private final CharacterAdapterOnClick charClickHandler;
-    private Context mContext;
 
     public MasterListCharacterAdapter(Context context, List<Character> characters, CharacterAdapterOnClick adapterOnClick) {
-        mContext = context;
+        Context mContext = context;
         mCharacters = characters;
         charClickHandler = adapterOnClick;
     }
@@ -46,6 +44,7 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
         TextView characterName = holder.mCharacterName;
         Thumbnail charThumbnail = currentCharacter.getThumbnail();
 
+        String NO_IMAGE = "no_image_available";
         if (charThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.ic_launcher).into(characterImage);
@@ -91,11 +90,11 @@ public class MasterListCharacterAdapter extends RecyclerView.Adapter<MasterListC
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final View mView;
-        public final ImageView mCharacterImage;
-        public final TextView mCharacterName;
+        final View mView;
+        final ImageView mCharacterImage;
+        final TextView mCharacterName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mView.setOnClickListener(this);

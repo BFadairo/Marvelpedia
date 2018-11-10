@@ -36,16 +36,13 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     @BindView(R.id.floating_action_button_member_add)
     FloatingActionButton floatingActionButton;
     private static FirebaseDatabase firebaseDatabase;
-    private Character retrievedCharacter;
-    private DetailExtrasFragments<Character> characterDetailExtrasFragments;
     private DetailExtrasFragments<Event> eventDetailExtrasFragments;
     private DetailExtrasFragments<Comic> comicDetailExtrasFragments;
     private String comic_tag, event_tag, series_tag;
-    private String character_extras, comic_extras, event_extras;
-    private List<Character> teamMembers = new ArrayList<>();
+    private final List<Character> teamMembers = new ArrayList<>();
+    private String character_extras;
     private DetailExtrasFragments<Series> seriesDetailExtrasFragments;
     private DatabaseReference teamReference;
-    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +70,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         Bundle argsToPass = getIntent().getExtras();
 
         //Grab the passed character from the bundle
-        retrievedCharacter = argsToPass.getParcelable(getResources().getString(R.string.character_extras));
+        Character retrievedCharacter = argsToPass.getParcelable(getResources().getString(R.string.character_extras));
 
 
         //Retrieve the string values for all required fields
@@ -108,7 +105,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     }
 
     private void setupCharacterTestFragment(Bundle passedArgs) {
-        characterDetailExtrasFragments = new DetailExtrasFragments<>();
+        DetailExtrasFragments<Character> characterDetailExtrasFragments = new DetailExtrasFragments<>();
         characterDetailExtrasFragments.setArguments(passedArgs);
     }
 
@@ -130,8 +127,8 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     private void retrieveStrings() {
         //Retrieve the string values for the extras
         character_extras = getResources().getString(R.string.character_extras);
-        comic_extras = getResources().getString(R.string.comic_extras);
-        event_extras = getResources().getString(R.string.event_extras);
+        String comic_extras = getResources().getString(R.string.comic_extras);
+        String event_extras = getResources().getString(R.string.event_extras);
 
         //Retrieve the string values for the fragment tags
         comic_tag = getResources().getString(R.string.comic_tag);
@@ -208,7 +205,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     }
 
     private void setupAd() {
-        mAdView = findViewById(R.id.adView);
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }

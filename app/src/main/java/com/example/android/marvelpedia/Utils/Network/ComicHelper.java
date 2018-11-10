@@ -19,7 +19,7 @@ import retrofit2.Response;
 
 public class ComicHelper {
 
-    public final String LOG_TAG = ComicHelper.class.getSimpleName();
+    private final String LOG_TAG = ComicHelper.class.getSimpleName();
     private final String apiKey = BuildConfig.MARVEL_API_KEY;
     private final String privateKey = BuildConfig.MARVEL_HASH_KEY;
     private Data<Event> eventData;
@@ -28,7 +28,7 @@ public class ComicHelper {
     private List<Event> mEvents = new ArrayList<>();
     private List<Character> mCharacters = new ArrayList<>();
     private List<Series> mSeries = new ArrayList<>();
-    private SendComicData comicInterface;
+    private final SendComicData comicInterface;
 
     public ComicHelper(SendComicData dataInterface) {
         comicInterface = dataInterface;
@@ -113,10 +113,10 @@ public class ComicHelper {
     }
 
     public interface SendComicData {
-        List<Character> sendComicCharacters(List<Character> characters);
+        void sendComicCharacters(List<Character> characters);
 
-        List<Event> sendComicEvents(List<Event> events);
+        void sendComicEvents(List<Event> events);
 
-        List<Series> sendComicSeries(List<Series> series);
+        void sendComicSeries(List<Series> series);
     }
 }

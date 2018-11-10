@@ -37,9 +37,8 @@ public class EventFragment extends Fragment implements EventDetailAdapter.EventO
     private Comic retrievedComic;
     private Character retrievedCharacter;
     private EventDetailAdapter mEventAdapter;
-    private TextView eventDescription, eventDetailHeader;
+    private TextView eventDescription;
     private Data<Event> eventData;
-    private RecyclerView.LayoutManager layoutManager;
     private List<Event> mEvents = new ArrayList<>();
 
     public EventFragment() {
@@ -52,7 +51,7 @@ public class EventFragment extends Fragment implements EventDetailAdapter.EventO
 
         //Get the reference to the character recycler view
         eventRecyclerView = rootView.findViewById(R.id.event_recycler_view);
-        eventDetailHeader = rootView.findViewById(R.id.event_header);
+        TextView eventDetailHeader = rootView.findViewById(R.id.event_header);
 
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
@@ -109,7 +108,7 @@ public class EventFragment extends Fragment implements EventDetailAdapter.EventO
         eventRecyclerView.setAdapter(mEventAdapter);
 
         //Create a Horizontal Linear Layout manager
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         eventRecyclerView.setLayoutManager(layoutManager);
     }
 

@@ -24,19 +24,19 @@ public class Event implements Parcelable {
     };
     @SerializedName("id")
     @Expose
-    private int eventId;
+    private final int eventId;
     @SerializedName("title")
     @Expose
-    private String eventTitle;
+    private final String eventTitle;
     @SerializedName("description")
     @Expose
-    private String eventDescription;
+    private final String eventDescription;
     @SerializedName("urls")
     @Expose
-    private List<Url> urls;
+    private final List<Url> urls;
     @SerializedName("thumbnail")
     @Expose
-    private Thumbnail thumbnails;
+    private final Thumbnail thumbnails;
     private String imageUrl;
 
     public Event(int eventId, String eventTitle, String eventDescription, List<Url> urls, Thumbnail thumbnails) {

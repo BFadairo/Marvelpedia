@@ -35,9 +35,8 @@ public class CharacterFragment extends Fragment implements CharacterDetailAdapte
     private RecyclerView characterRecyclerView;
     private Comic retrievedComic;
     private CharacterDetailAdapter mCharacterAdapter;
-    private TextView characterDescription, characterDetailHeader;
+    private TextView characterDescription;
     private Data<Character> characterData;
-    private RecyclerView.LayoutManager layoutManager;
     private List<Character> mCharacters = new ArrayList<>();
 
     public CharacterFragment() {
@@ -51,7 +50,7 @@ public class CharacterFragment extends Fragment implements CharacterDetailAdapte
 
         //Get the reference to the character recycler view
         characterRecyclerView = rootView.findViewById(R.id.character_recycler_view);
-        characterDetailHeader = rootView.findViewById(R.id.character_header);
+        TextView characterDetailHeader = rootView.findViewById(R.id.character_header);
 
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
@@ -108,7 +107,7 @@ public class CharacterFragment extends Fragment implements CharacterDetailAdapte
         characterRecyclerView.setAdapter(mCharacterAdapter);
 
         //Create a Horizontal Linear Layout manager
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         characterRecyclerView.setLayoutManager(layoutManager);
     }
 

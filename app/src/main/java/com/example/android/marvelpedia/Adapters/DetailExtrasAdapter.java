@@ -23,15 +23,13 @@ import java.util.List;
 public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAdapter<T>.ViewHolder> {
 
     private final static String LOG_TAG = DetailExtrasAdapter.class.getSimpleName();
-    private final String NO_IMAGE = "no_image_available";
-    private final String portrait_uncanny = "portrait_uncanny";
     private List<T> mItems;
-    private ItemOnClick<T> itemOnClick;
-    private Context mContext;
+    private final ItemOnClick<T> itemOnClick;
     private Thumbnail currentItemThumbnail;
 
     public DetailExtrasAdapter(Context context, List<T> items, ItemOnClick<T> onClick) {
-        mContext = context;
+        //noinspection UnnecessaryLocalVariable
+        Context mContext = context;
         mItems = items;
         itemOnClick = onClick;
     }
@@ -63,7 +61,7 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
         //TextView comicTitle = viewHolder.mComicName;
 
 
-
+        String NO_IMAGE = "no_image_available";
         if (currentItemThumbnail.getPath().endsWith(NO_IMAGE)) {
             //If there's no Image marvel Image will be used
             Picasso.get().load(R.mipmap.ic_launcher).into(itemImage);
@@ -74,6 +72,7 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
             String thumbnailExtension = currentItemThumbnail.getExtension();
             String thumbnailPath = currentItemThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
+            String portrait_uncanny = "portrait_uncanny";
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
             if (currentItem instanceof Character) {
                 checkSDKVersionAndSetTransitionName(itemImage, position, "Character");
@@ -126,11 +125,11 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public final View mView;
-        public final ImageView mItemImage;
+        final View mView;
+        final ImageView mItemImage;
         //public final TextView mComicName;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             mItemImage = view.findViewById(R.id.item_image);

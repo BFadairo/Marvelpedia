@@ -50,17 +50,11 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     private DetailExtrasAdapter<Character> mCharacterAdapter;
     @BindView(R.id.test_item_header)
     TextView itemDetailHeader;
-    private RecyclerView.LayoutManager layoutManager;
-    private List<Comic> mComics = new ArrayList<>();
-    private List<Character> mCharacters = new ArrayList<>();
-    private List<Event> mEvents = new ArrayList<>();
-    private List<Series> mSeries = new ArrayList<>();
-    private CharacterHelper characterHelper;
-    private ComicHelper comicHelper;
-    private EventHelper eventHelper;
-    private SeriesHelper seriesHelper;
+    private final List<Comic> mComics = new ArrayList<>();
+    private final List<Character> mCharacters = new ArrayList<>();
+    private final List<Event> mEvents = new ArrayList<>();
+    private final List<Series> mSeries = new ArrayList<>();
     private FragmentManager fragmentManager;
-    private AddToDatabase characterWriter;
 
     public DetailExtrasFragments() {
     }
@@ -73,7 +67,7 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
         retrieveStrings();
         ButterKnife.bind(this, rootView);
 
-        characterWriter = (AddToDatabase) getActivity();
+        AddToDatabase characterWriter = (AddToDatabase) getActivity();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             rootView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -87,10 +81,10 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
         }
 
         //Setup the helpers for each class (contain the API calls)
-        characterHelper = new CharacterHelper(this);
-        comicHelper = new ComicHelper(this);
-        eventHelper = new EventHelper(this);
-        seriesHelper = new SeriesHelper(this);
+        CharacterHelper characterHelper = new CharacterHelper(this);
+        ComicHelper comicHelper = new ComicHelper(this);
+        EventHelper eventHelper = new EventHelper(this);
+        SeriesHelper seriesHelper = new SeriesHelper(this);
 
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
@@ -239,7 +233,7 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
         }
 
         //Create a horizontal Linear Layout manager
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         itemRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -302,76 +296,64 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     }
 
     @Override
-    public List<Character> sendComicCharacters(List<Character> characters) {
+    public void sendComicCharacters(List<Character> characters) {
         mCharacterAdapter.setItemData(characters);
-        return characters;
     }
 
     @Override
-    public List<Character> sendEventCharacters(List<Character> characters) {
+    public void sendEventCharacters(List<Character> characters) {
         mCharacterAdapter.setItemData(characters);
-        return characters;
     }
 
     @Override
-    public List<Character> sendSeriesCharacters(List<Character> characters) {
+    public void sendSeriesCharacters(List<Character> characters) {
         mCharacterAdapter.setItemData(characters);
-        return characters;
     }
 
     @Override
-    public List<Event> sendCharacterEvents(List<Event> events) {
+    public void sendCharacterEvents(List<Event> events) {
         mEventAdapter.setItemData(events);
-        return events;
     }
 
     @Override
-    public List<Event> sendComicEvents(List<Event> events) {
+    public void sendComicEvents(List<Event> events) {
         mEventAdapter.setItemData(events);
-        return events;
     }
 
     @Override
-    public List<Event> sendSeriesEvents(List<Event> events) {
+    public void sendSeriesEvents(List<Event> events) {
         mEventAdapter.setItemData(events);
-        return events;
     }
 
 
     @Override
-    public List<Comic> sendCharacterComics(List<Comic> comics) {
+    public void sendCharacterComics(List<Comic> comics) {
         mComicAdapter.setItemData(comics);
-        return comics;
     }
 
     @Override
-    public List<Comic> sendEventComics(List<Comic> comics) {
+    public void sendEventComics(List<Comic> comics) {
         mComicAdapter.setItemData(comics);
-        return comics;
     }
 
     @Override
-    public List<Comic> sendSeriesComics(List<Comic> comics) {
+    public void sendSeriesComics(List<Comic> comics) {
         mComicAdapter.setItemData(comics);
-        return comics;
     }
 
 
     @Override
-    public List<Series> sendEventSeries(List<Series> series) {
+    public void sendEventSeries(List<Series> series) {
         mSeriesAdapter.setItemData(series);
-        return series;
     }
 
     @Override
-    public List<Series> sendComicSeries(List<Series> series) {
+    public void sendComicSeries(List<Series> series) {
         mSeriesAdapter.setItemData(series);
-        return series;
     }
 
     @Override
-    public List<Series> sendCharacterSeries(List<Series> series) {
+    public void sendCharacterSeries(List<Series> series) {
         mSeriesAdapter.setItemData(series);
-        return series;
     }
 }

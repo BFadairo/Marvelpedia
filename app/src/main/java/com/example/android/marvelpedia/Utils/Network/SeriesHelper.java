@@ -19,7 +19,7 @@ import retrofit2.Response;
 
 public class SeriesHelper {
 
-    public final String LOG_TAG = SeriesHelper.class.getSimpleName();
+    private final String LOG_TAG = SeriesHelper.class.getSimpleName();
     private final String apiKey = BuildConfig.MARVEL_API_KEY;
     private final String privateKey = BuildConfig.MARVEL_HASH_KEY;
     private Data<Comic> comicData;
@@ -28,7 +28,7 @@ public class SeriesHelper {
     private List<Comic> mComics = new ArrayList<>();
     private List<Character> mCharacters = new ArrayList<>();
     private List<Event> mEvent = new ArrayList<>();
-    private SendSeriesData mSeriesInterface;
+    private final SendSeriesData mSeriesInterface;
 
     public SeriesHelper(SendSeriesData mSeriesInterface) {
         this.mSeriesInterface = mSeriesInterface;
@@ -120,10 +120,10 @@ public class SeriesHelper {
 
 
     public interface SendSeriesData {
-        List<Event> sendSeriesEvents(List<Event> events);
+        void sendSeriesEvents(List<Event> events);
 
-        List<Comic> sendSeriesComics(List<Comic> comics);
+        void sendSeriesComics(List<Comic> comics);
 
-        List<Character> sendSeriesCharacters(List<Character> characters);
+        void sendSeriesCharacters(List<Character> characters);
     }
 }

@@ -69,7 +69,7 @@ public class Comic implements Parcelable {
         this.thumbnails = thumbnail;
     }
 
-    protected Comic(Parcel in) {
+    private Comic(Parcel in) {
         this.id = (Integer) in.readValue(Integer.class.getClassLoader());
         this.title = in.readString();
         this.issueNumber = (Integer) in.readValue(Integer.class.getClassLoader());

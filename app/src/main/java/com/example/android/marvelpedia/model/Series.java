@@ -21,22 +21,22 @@ public class Series implements Parcelable {
     };
     @SerializedName("id")
     @Expose
-    private int seriesId;
+    private final int seriesId;
     @SerializedName("title")
     @Expose
-    private String seriesTitle;
+    private final String seriesTitle;
     @SerializedName("description")
     @Expose
-    private String seriesDescription;
+    private final String seriesDescription;
     @SerializedName("startYear")
     @Expose
-    private int seriesStartYear;
+    private final int seriesStartYear;
     @SerializedName("endYear")
     @Expose
-    private int seriesEndYear;
+    private final int seriesEndYear;
     @SerializedName("thumbnail")
     @Expose
-    private Thumbnail thumbnail;
+    private final Thumbnail thumbnail;
     private String imageUrl;
 
     public Series(int seriesId, String seriesTitle, String seriesDescription, int seriesStartYear, int seriesEndYear, Thumbnail thumbnail) {
@@ -48,7 +48,7 @@ public class Series implements Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    protected Series(Parcel in) {
+    private Series(Parcel in) {
         this.seriesId = in.readInt();
         this.seriesTitle = in.readString();
         this.seriesDescription = in.readString();

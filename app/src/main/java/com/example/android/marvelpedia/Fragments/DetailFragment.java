@@ -22,7 +22,7 @@ public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
     private String CHARACTER_EXTRAS, COMIC_EXTRAS, EVENT_EXTRAS, SERIES_EXTRAS;
-    public String imagePath;
+    private String imagePath;
     private Character passedCharacter;
     private Comic passedComic;
     private Event passedEvent;

@@ -36,7 +36,6 @@ public class ComicFragment extends Fragment implements ComicDetailAdapter.ComicO
     private ComicDetailAdapter mComicAdapter;
     private TextView characterDescription, comicDetailHeader;
     private Data<Comic> comicData;
-    private RecyclerView.LayoutManager layoutManager;
     private List<Comic> mComics = new ArrayList<>();
     private SendComicData comicInterface;
 
@@ -111,7 +110,7 @@ public class ComicFragment extends Fragment implements ComicDetailAdapter.ComicO
         comicRecyclerView.setAdapter(mComicAdapter);
 
         //Create a Horizontal Linear Layout manager
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         comicRecyclerView.setLayoutManager(layoutManager);
     }
 
@@ -125,7 +124,7 @@ public class ComicFragment extends Fragment implements ComicDetailAdapter.ComicO
         comicInterface.sendComic(comic);
     }
 
-    public interface SendComicData {
+    interface SendComicData {
         void sendComic(Comic comic);
     }
 }

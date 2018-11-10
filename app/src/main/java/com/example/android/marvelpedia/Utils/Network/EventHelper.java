@@ -19,7 +19,7 @@ import retrofit2.Response;
 
 public class EventHelper {
 
-    public final String LOG_TAG = EventHelper.class.getSimpleName();
+    private final String LOG_TAG = EventHelper.class.getSimpleName();
     private final String apiKey = BuildConfig.MARVEL_API_KEY;
     private final String privateKey = BuildConfig.MARVEL_HASH_KEY;
     private Data<Comic> comicData;
@@ -28,7 +28,7 @@ public class EventHelper {
     private List<Comic> mComics = new ArrayList<>();
     private List<Character> mCharacters = new ArrayList<>();
     private List<Series> mSeries = new ArrayList<>();
-    private SendEventData mEventInterface;
+    private final SendEventData mEventInterface;
 
     public EventHelper(SendEventData mEventInterface) {
         this.mEventInterface = mEventInterface;
@@ -119,11 +119,11 @@ public class EventHelper {
     }
 
     public interface SendEventData {
-        List<Series> sendEventSeries(List<Series> series);
+        void sendEventSeries(List<Series> series);
 
-        List<Comic> sendEventComics(List<Comic> comics);
+        void sendEventComics(List<Comic> comics);
 
-        List<Character> sendEventCharacters(List<Character> characters);
+        void sendEventCharacters(List<Character> characters);
     }
 
 }

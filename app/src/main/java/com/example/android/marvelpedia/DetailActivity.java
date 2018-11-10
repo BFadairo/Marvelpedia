@@ -1,6 +1,5 @@
 package com.example.android.marvelpedia;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -39,7 +38,8 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     private DetailExtrasFragments<Event> eventDetailExtrasFragments;
     private DetailExtrasFragments<Comic> comicDetailExtrasFragments;
     private String comic_tag, event_tag, series_tag;
-    private final List<Character> teamMembers = new ArrayList<>();
+    private List<Character> teamMembers = new ArrayList<>();
+    private List<Integer> characterIds = new ArrayList<>();
     private String character_extras;
     private DetailExtrasFragments<Series> seriesDetailExtrasFragments;
     private DatabaseReference teamReference;
@@ -52,10 +52,6 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
         ButterKnife.bind(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            postponeEnterTransition();
-        }
-
         //Load a Test Ad
         setupAd();
 
@@ -64,13 +60,16 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         //Retrieve the team members currently stored in the database
         retrieveTeamMembers();
 
-
         //Receive the extras that were passed through the intent
         //and put them into a bundle
         Bundle argsToPass = getIntent().getExtras();
 
         //Grab the passed character from the bundle
         Character retrievedCharacter = argsToPass.getParcelable(getResources().getString(R.string.character_extras));
+
+        //Initial update to FAB Drawable
+        updateFloatingActionButtonDrawable(retrievedCharacter);
+        setupFloatingActionButton(retrievedCharacter);
 
 
         //Retrieve the string values for all required fields
@@ -86,10 +85,16 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.detail_information_container, detailFragment)
+                .addToBackStack(null)
                 .add(R.id.comic_container, comicDetailExtrasFragments, comic_tag)
+                .addToBackStack(null)
                 .add(R.id.event_container, eventDetailExtrasFragments, event_tag)
+                .addToBackStack(null)
                 .add(R.id.story_container, seriesDetailExtrasFragments, series_tag)
+                .addToBackStack(null)
                 .commit();
+
+
     }
 
     private void setupActivityTitle() {
@@ -136,22 +141,30 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         series_tag = getResources().getString(R.string.series_tag);
     }
 
-    private void addTeamMember(Character character) {
-        if (teamMembers.size() <= 5) {
+    private void addOrRemoveTeamMember(Character character) {
+        if (teamMembers.size() <= 5 && !(characterIds.contains(character.getId()))) {
+            Log.v(LOG_TAG, "Does it contain:" + teamMembers.contains(character));
+            Log.v(LOG_TAG, "Team Object: " + teamMembers);
             Log.v(LOG_TAG, teamMembers.size() + "Size");
+            Log.v(LOG_TAG, "Character Id Size: " + characterIds.size());
             teamReference.child(character.getId().toString()).setValue(character);
             Toast.makeText(this, "Adding Character to Team", Toast.LENGTH_SHORT).show();
-            for (int i = 0; i < teamMembers.size(); i++) {
-                if (character.getId().equals(teamMembers.get(i).getId())) {
-                    //teamMembers.remove(i);
-                    teamReference.child(character.getId().toString()).removeValue();
-                    Toast.makeText(this, "Removing Character from Team", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else {
-            Toast.makeText(this, "Already have 5 Team Members, Delete One", Toast.LENGTH_SHORT).show();
+            updateFloatingActionButtonDrawable(character);
+        } else if (characterIds.contains(character.getId())) {
+            removeTeamMember(character);
+        } else if (characterIds.contains(character.getId()) && teamMembers.size() == 5) {
+            Toast.makeText(this, "Team is Full, Delete a Member", Toast.LENGTH_SHORT).show();
         }
+        updateFloatingActionButtonDrawable(character);
         Log.v(LOG_TAG, "Writing to Database");
+    }
+
+    private void removeTeamMember(Character character) {
+        Log.v(LOG_TAG, "Removing Character from Team");
+
+        Toast.makeText(this, "Removing Character from Team", Toast.LENGTH_SHORT).show();
+        teamReference.child(character.getId().toString()).removeValue();
+        Log.v(LOG_TAG, "Deleting from Database");
     }
 
     private void retrieveTeamMembers() {
@@ -160,10 +173,12 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 teamMembers.clear();
+                characterIds.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Character currentCharacter = postSnapshot.getValue(Character.class);
                     teamMembers.add(currentCharacter);
-                    //updateFloatingActionButtonDrawable(currentCharacter);
+                    characterIds.add(currentCharacter.getId());
+                    updateFloatingActionButtonDrawable(currentCharacter);
                     Log.v(LOG_TAG, postSnapshot.getKey());
                 }
             }
@@ -184,18 +199,16 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addTeamMember(character);
+                addOrRemoveTeamMember(character);
             }
         });
     }
 
     private void updateFloatingActionButtonDrawable(Character character) {
-        for (int i = 0; i < teamMembers.size(); i++) {
-            if (character.getId().equals(teamMembers.get(i).getId())) {
-                floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_remove_black_24dp));
-            } else {
-                floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp));
-            }
+        if (characterIds.contains(character.getId())) {
+            floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_remove_black_24dp));
+        } else {
+            floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_black_24dp));
         }
     }
 
@@ -226,5 +239,16 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Log.v(LOG_TAG, "On SavedInstance called");
+    }
+
+    @Override
+    public void onBackPressed() {
+        int mBackStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        //
+        Log.v(LOG_TAG, mBackStackCount + "Size");
+        if (mBackStackCount <= 1) {
+            getSupportFragmentManager().popBackStack();
+        }
+        super.onBackPressed();
     }
 }

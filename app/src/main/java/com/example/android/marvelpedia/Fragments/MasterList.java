@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -39,6 +40,7 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
     private final String SAVED_CHARACTERS = "characters";
+    private final String CHARACTER_TRANSITION_NAME = "character_transition";
     private String ATTRIBUTION_TEXT;
     private RecyclerView characterRecyclerView;
     private android.support.v7.widget.SearchView marvelSearchView;
@@ -63,8 +65,6 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         // Get a reference to the RecyclerView in the fragment_master_list xml layout file
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
         marvelSearchView = rootView.findViewById(R.id.search_view_text);
-
-        Bundle savedCharacters = new Bundle();
 
         if (savedInstanceState != null) {
             mCharacters = savedInstanceState.getParcelableArrayList(SAVED_CHARACTERS);
@@ -158,14 +158,15 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
 
     @Override
-    public void onClick(Character character, ImageView view) {
+    public void onClick(int adapterPosition, Character character, ImageView view) {
         Intent characterActivity = new Intent(getContext(), DetailActivity.class);
         String CHARACTER_EXTRAS = "character_extras";
         characterActivity.putExtra(CHARACTER_EXTRAS, character);
+        characterActivity.putExtra(CHARACTER_TRANSITION_NAME, ViewCompat.getTransitionName(view));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Log.v(LOG_TAG, view.getTransitionName());
             characterActivity.putExtra("transition_name", view.getTransitionName());
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, ViewCompat.getTransitionName(view));
             startActivity(characterActivity, options.toBundle());
         } else {
             startActivity(characterActivity);

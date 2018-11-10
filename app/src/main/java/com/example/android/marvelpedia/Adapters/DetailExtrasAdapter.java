@@ -1,8 +1,8 @@
 package com.example.android.marvelpedia.Adapters;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,19 +75,19 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
             String portrait_uncanny = "portrait_uncanny";
             String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
             if (currentItem instanceof Character) {
-                checkSDKVersionAndSetTransitionName(itemImage, position, "Character");
+                ViewCompat.setTransitionName(itemImage, ((Character) currentItem).getName());
                 ((Character) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Character) currentItem).getImageUrl());
             } else if (currentItem instanceof Comic) {
-                checkSDKVersionAndSetTransitionName(itemImage, position, "Comic");
+                ViewCompat.setTransitionName(itemImage, (((Comic) currentItem).getTitle()));
                 ((Comic) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Comic) currentItem).getImageUrl());
             } else if (currentItem instanceof Event) {
-                checkSDKVersionAndSetTransitionName(itemImage, position, "Event");
+                ViewCompat.setTransitionName(itemImage, (((Event) currentItem).getEventTitle()));
                 ((Event) currentItem).setImageUrl(combinedPath);
                 Log.v(LOG_TAG, ((Event) currentItem).getImageUrl());
             } else if (currentItem instanceof Series) {
-                checkSDKVersionAndSetTransitionName(itemImage, position, "Series");
+                ViewCompat.setTransitionName(itemImage, (((Series) currentItem).getSeriesTitle()));
                 ((Series) currentItem).setImageUrl(combinedPath);
 
             }
@@ -113,15 +113,8 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
         notifyDataSetChanged();
     }
 
-    private void checkSDKVersionAndSetTransitionName(ImageView transitionView, int position, String transitionName) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            transitionView.setTransitionName(transitionName + position);
-            Log.v(LOG_TAG, transitionView.getTransitionName());
-        }
-    }
-
     public interface ItemOnClick<T> {
-        void onClick(T item, ImageView transitionView);
+        void onClick(int adapterPosition, T item, ImageView transitionView);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -141,7 +134,7 @@ public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAda
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             T item = mItems.get(adapterPosition);
-            itemOnClick.onClick(item, mItemImage);
+            itemOnClick.onClick(adapterPosition, item, mItemImage);
         }
     }
 }

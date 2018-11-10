@@ -18,10 +18,12 @@ import java.util.List;
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
 
     private List<Character> mCharacters;
+    private startMemberActivity mMemberActivity;
 
 
-    public TeamAdapter(Context context, List<Character> characters) {
+    public TeamAdapter(Context context, List<Character> characters, startMemberActivity memberActivity) {
         Context mContext = context;
+        this.mMemberActivity = memberActivity;
         this.mCharacters = characters;
     }
 
@@ -58,6 +60,10 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public interface startMemberActivity {
+        void onClick(int adapterPosition, Character character, ImageView transitionView);
+    }
+
     @Override
     public int getItemCount() {
         return mCharacters.size();
@@ -80,6 +86,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             Character character = mCharacters.get(adapterPosition);
+            mMemberActivity.onClick(adapterPosition, character, mMemberImage);
         }
     }
 }

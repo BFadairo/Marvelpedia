@@ -41,7 +41,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOnClick<Comic>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOnClick<Comic>,
+        SharedPreferences.OnSharedPreferenceChangeListener, TeamAdapter.startMemberActivity {
 
     private final String LOG_TAG = TeamFragment.class.getSimpleName();
     @BindView(R.id.team_recycler_view)
@@ -69,7 +70,7 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
 
         ButterKnife.bind(this, rootView);
 
-        //Get the Firebase Instance
+        //Get the firebase Instance
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         teamMember = database.getReference();
         populateUi();
@@ -92,7 +93,7 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     private void populateUi() {
         //Create a new Comic Adapter
         // This adapter takes in an empty list of comics as well as a context
-        mTeamAdapter = new TeamAdapter(getContext(), teamMembers);
+        mTeamAdapter = new TeamAdapter(getContext(), teamMembers, this);
 
         //Set the adapter on the RecyclerView
         teamRecyclerView.setAdapter(mTeamAdapter);
@@ -111,11 +112,6 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
         RecyclerView.LayoutManager layoutManager;
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         teamComicRecyclerView.setLayoutManager(layoutManager);
-    }
-
-    @Override
-    public void onClick(Comic item, ImageView transitionView) {
-        Log.v(LOG_TAG, item.getTitle());
     }
 
     private void getTeamComics(List<Character> characters) {
@@ -228,5 +224,15 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
          */
         PreferenceManager.getDefaultSharedPreferences(getContext())
                 .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onClick(int adapterPosition, Comic item, ImageView transitionView) {
+        Log.v(LOG_TAG, item.getTitle());
+    }
+
+    @Override
+    public void onClick(int adapterPosition, Character character, ImageView transitionView) {
+        Log.v(LOG_TAG, character.getName());
     }
 }

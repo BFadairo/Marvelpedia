@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.transition.Transition;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,6 +46,8 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     @BindView(R.id.test_recycler_view)
     RecyclerView itemRecyclerView;
     private Parcelable retrievedItem;
+    private final String CHARACTER_TRANSITION_NAME = "character_transition";
+    private final String COMIC_TRANSITION_NAME = "comic_transition";
     private DetailExtrasAdapter<Comic> mComicAdapter;
     private DetailExtrasAdapter<Event> mEventAdapter;
     private DetailExtrasAdapter<Series> mSeriesAdapter;
@@ -54,6 +58,7 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     private final List<Character> mCharacters = new ArrayList<>();
     private final List<Event> mEvents = new ArrayList<>();
     private final List<Series> mSeries = new ArrayList<>();
+    private String transitionName;
     private FragmentManager fragmentManager;
 
     public DetailExtrasFragments() {
@@ -63,6 +68,7 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_detail_extras, container, false);
+
 
         retrieveStrings();
         ButterKnife.bind(this, rootView);
@@ -88,15 +94,18 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
 
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
+        if (passedArgs != null) {
+            transitionName = passedArgs.getString(CHARACTER_TRANSITION_NAME);
 
-        if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
-            retrievedItem = passedArgs.getParcelable(CHARACTER_EXTRAS);
-        } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
-            retrievedItem = passedArgs.getParcelable(COMIC_EXTRAS);
-        } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
-            retrievedItem = passedArgs.getParcelable(EVENT_EXTRAS);
-        } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
-            retrievedItem = passedArgs.getParcelable(SERIES_EXTRAS);
+            if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
+                retrievedItem = passedArgs.getParcelable(CHARACTER_EXTRAS);
+            } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
+                retrievedItem = passedArgs.getParcelable(COMIC_EXTRAS);
+            } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
+                retrievedItem = passedArgs.getParcelable(EVENT_EXTRAS);
+            } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
+                retrievedItem = passedArgs.getParcelable(SERIES_EXTRAS);
+            }
         }
 
         Log.v(LOG_TAG, (retrievedItem instanceof Character) + "Char");
@@ -109,90 +118,91 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
         //Initialize the fragment manager
         initializeFragmentManager();
 
-        if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
-            if (retrievedItem instanceof Character) {
-                Character currentCharacter = (Character) retrievedItem;
-                Log.v(LOG_TAG, "Character Is Object");
-                Log.v(LOG_TAG, this.getTag());
-                characterWriter.addToDb(currentCharacter);
-                populateUi();
+        if (passedArgs != null) {
+            if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
+                if (retrievedItem instanceof Character) {
+                    Character currentCharacter = (Character) retrievedItem;
+                    Log.v(LOG_TAG, "Character Is Object");
+                    Log.v(LOG_TAG, this.getTag());
+                    characterWriter.addToDb(currentCharacter);
+                    populateUi();
 
-                switch (currentTag) {
-                    case "Comic":
-                        characterHelper.retrieveCharacterComics((Character) retrievedItem);
-                        itemDetailHeader.setText(R.string.comic_header);
-                        break;
-                    case "Event":
-                        characterHelper.retrieveCharacterEvents((Character) retrievedItem);
-                        itemDetailHeader.setText(R.string.event_header);
-                        break;
-                    case "Story":
-                        itemDetailHeader.setText(R.string.story_header);
-                        break;
-                    case "Series":
-                        characterHelper.retrieveCharacterSeries((Character) retrievedItem);
-                        itemDetailHeader.setText(R.string.series_header);
-                        break;
+                    switch (currentTag) {
+                        case "Comic":
+                            characterHelper.retrieveCharacterComics((Character) retrievedItem);
+                            itemDetailHeader.setText(R.string.comic_header);
+                            break;
+                        case "Event":
+                            characterHelper.retrieveCharacterEvents((Character) retrievedItem);
+                            itemDetailHeader.setText(R.string.event_header);
+                            break;
+                        case "Story":
+                            itemDetailHeader.setText(R.string.story_header);
+                            break;
+                        case "Series":
+                            characterHelper.retrieveCharacterSeries((Character) retrievedItem);
+                            itemDetailHeader.setText(R.string.series_header);
+                            break;
+                    }
                 }
-                //helperMethods.retrieveCharacterEvents((Character) retrievedItem);
-            }
-        } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
-            if (retrievedItem instanceof Comic) {
-                Log.v(LOG_TAG, "Comic Is Object");
-                populateUi();
-                switch (currentTag) {
-                    case "Character":
-                        comicHelper.retrieveComicCharacters((Comic) retrievedItem);
-                        itemDetailHeader.setText(R.string.character_header);
-                        break;
-                    case "Event":
-                        comicHelper.retrieveComicEvents((Comic) retrievedItem);
-                        itemDetailHeader.setText(R.string.event_header);
-                        break;
-                    case "Series":
-                        comicHelper.retrieveComicSeries((Comic) retrievedItem);
-                        itemDetailHeader.setText(R.string.series_header);
-                        break;
+            } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
+                if (retrievedItem instanceof Comic) {
+                    Log.v(LOG_TAG, "Comic Is Object");
+                    populateUi();
+                    switch (currentTag) {
+                        case "Character":
+                            comicHelper.retrieveComicCharacters((Comic) retrievedItem);
+                            itemDetailHeader.setText(R.string.character_header);
+                            break;
+                        case "Event":
+                            comicHelper.retrieveComicEvents((Comic) retrievedItem);
+                            itemDetailHeader.setText(R.string.event_header);
+                            break;
+                        case "Series":
+                            comicHelper.retrieveComicSeries((Comic) retrievedItem);
+                            itemDetailHeader.setText(R.string.series_header);
+                            break;
+                    }
                 }
-            }
-        } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
-            if (retrievedItem instanceof Event) {
-                Log.v(LOG_TAG, "Event Is Object");
-                Event currentEvent = (Event) retrievedItem;
-                populateUi();
-                switch (currentTag) {
-                    case "Character":
-                        eventHelper.retrieveEventCharacters(currentEvent);
-                        itemDetailHeader.setText(R.string.character_header);
-                        break;
-                    case "Comic":
-                        eventHelper.retrieveEventComics(currentEvent);
-                        itemDetailHeader.setText(R.string.comic_header);
-                        break;
-                    case "Series":
-                        eventHelper.retrieveEventSeries(currentEvent);
-                        itemDetailHeader.setText(R.string.series_header);
-                        break;
+            } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
+                if (retrievedItem instanceof Event) {
+                    Log.v(LOG_TAG, "Event Is Object");
+                    Event currentEvent = (Event) retrievedItem;
+                    populateUi();
+                    switch (currentTag) {
+                        case "Character":
+                            eventHelper.retrieveEventCharacters(currentEvent);
+                            itemDetailHeader.setText(R.string.character_header);
+                            break;
+                        case "Comic":
+                            eventHelper.retrieveEventComics(currentEvent);
+                            itemDetailHeader.setText(R.string.comic_header);
+                            break;
+                        case "Series":
+                            eventHelper.retrieveEventSeries(currentEvent);
+                            itemDetailHeader.setText(R.string.series_header);
+                            break;
+                    }
                 }
-            }
-        } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
-            if (retrievedItem instanceof Series) {
-                Series currentSeries = (Series) retrievedItem;
-                Log.v(LOG_TAG, "Series is Object");
-                populateUi();
-                switch (currentTag) {
-                    case "Character":
-                        seriesHelper.retrieveSeriesCharacters(currentSeries);
-                        itemDetailHeader.setText(R.string.character_header);
-                        break;
-                    case "Comic":
-                        seriesHelper.retrieveSeriesComics(currentSeries);
-                        itemDetailHeader.setText(R.string.comic_header);
-                        break;
-                    case "Event":
-                        seriesHelper.retrieveSeriesEvents(currentSeries);
-                        itemDetailHeader.setText(R.string.event_header);
-                        break;
+            } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
+                if (retrievedItem instanceof Series) {
+                    Series currentSeries = (Series) retrievedItem;
+                    Log.v(LOG_TAG, "Series is Object");
+                    populateUi();
+                    switch (currentTag) {
+                        case "Character":
+                            seriesHelper.retrieveSeriesCharacters(currentSeries);
+                            itemDetailHeader.setText(R.string.character_header);
+                            break;
+                        case "Comic":
+                            seriesHelper.retrieveSeriesComics(currentSeries);
+                            itemDetailHeader.setText(R.string.comic_header);
+                            break;
+                        case "Event":
+                            seriesHelper.retrieveSeriesEvents(currentSeries);
+                            itemDetailHeader.setText(R.string.event_header);
+                            break;
+                    }
                 }
             }
         }
@@ -242,33 +252,29 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     }
 
     @Override
-    public void onClick(Object item, ImageView transitionView) {
+    public void onClick(int adapterPosition, Object item, ImageView transitionView) {
         Bundle argsToPass = new Bundle();
         if (item instanceof Comic) {
-            String transitionName;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                transitionName = transitionView.getTransitionName();
-            }
             DetailExtrasFragments<Character> newCharacterFragment = new DetailExtrasFragments<>();
             DetailExtrasFragments<Event> newEventFragment = new DetailExtrasFragments<>();
             DetailExtrasFragments<Series> newSeriesFragment = new DetailExtrasFragments<>();
             DetailFragment newDetailFragment = new DetailFragment();
             Log.v(LOG_TAG, ((Comic) item).getTitle());
             argsToPass.putParcelable(COMIC_EXTRAS, (Comic) item);
+            argsToPass.putString(CHARACTER_TRANSITION_NAME, ViewCompat.getTransitionName(transitionView));
             newCharacterFragment.setArguments(argsToPass);
             newDetailFragment.setArguments(argsToPass);
             newEventFragment.setArguments(argsToPass);
             newSeriesFragment.setArguments(argsToPass);
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                transaction
-                        .addSharedElement(transitionView, getString(R.string.image_transition))
-                        .replace(R.id.detail_information_container, newDetailFragment)
-                        .replace(R.id.comic_container, newCharacterFragment, CHARACTER_TAG)
-                        .replace(R.id.event_container, newEventFragment, EVENT_TAG)
-                        .replace(R.id.story_container, newSeriesFragment, SERIES_TAG)
-                        .commit();
-            }
+
+            Transition changeTransform = TransitionInflater.from(getContext())
+                    .inflateTransition(R.transition.change_image_transform);
+
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .addSharedElement(transitionView, ViewCompat.getTransitionName(transitionView))
+                    .addToBackStack(null)
+                    .replace(R.id.detail_information_container, newDetailFragment)
+                    .commit();
         } else if (item instanceof Event) {
             Log.v(LOG_TAG, ((Event) item).getEventTitle());
         } else if (item instanceof Series) {

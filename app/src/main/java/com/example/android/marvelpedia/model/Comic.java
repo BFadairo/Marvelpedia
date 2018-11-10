@@ -77,7 +77,7 @@ public class Comic implements Parcelable {
         this.description = in.readString();
         this.isbn = in.readString();
         this.upc = in.readString();
-        this.urls = new ArrayList<Url>();
+        this.urls = new ArrayList<>();
         in.readList(this.urls, Url.class.getClassLoader());
         this.thumbnails = (Thumbnail) in.readSerializable();
     }

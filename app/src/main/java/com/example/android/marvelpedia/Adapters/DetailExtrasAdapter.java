@@ -20,9 +20,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHolder> {
+public class DetailExtrasAdapter<T> extends RecyclerView.Adapter<DetailExtrasAdapter<T>.ViewHolder> {
 
-    private final static String LOG_TAG = TestAdapter.class.getSimpleName();
+    private final static String LOG_TAG = DetailExtrasAdapter.class.getSimpleName();
     private final String NO_IMAGE = "no_image_available";
     private final String portrait_uncanny = "portrait_uncanny";
     private List<T> mItems;
@@ -30,7 +30,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
     private Context mContext;
     private Thumbnail currentItemThumbnail;
 
-    public TestAdapter(Context context, List<T> items, ItemOnClick<T> onClick) {
+    public DetailExtrasAdapter(Context context, List<T> items, ItemOnClick<T> onClick) {
         mContext = context;
         mItems = items;
         itemOnClick = onClick;
@@ -42,7 +42,7 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.detail_frag_list, viewGroup, false);
 
-        return new TestAdapter<T>.ViewHolder(view);
+        return new DetailExtrasAdapter<T>.ViewHolder(view);
     }
 
     @Override
@@ -119,10 +119,6 @@ public class TestAdapter<T> extends RecyclerView.Adapter<TestAdapter<T>.ViewHold
             transitionView.setTransitionName(transitionName + position);
             Log.v(LOG_TAG, transitionView.getTransitionName());
         }
-    }
-
-    public interface receiveData<T> {
-        List<T> setData(List<T> items);
     }
 
     public interface ItemOnClick<T> {

@@ -9,12 +9,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.android.marvelpedia.Fragments.DetailExtrasFragments;
 import com.example.android.marvelpedia.Fragments.DetailFragment;
-import com.example.android.marvelpedia.Fragments.TestFragments;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Event;
 import com.example.android.marvelpedia.model.Series;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,21 +29,23 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailActivity extends AppCompatActivity implements TestFragments.AddToDatabase {
+public class DetailActivity extends AppCompatActivity implements DetailExtrasFragments.AddToDatabase {
 
     private final String LOG_TAG = DetailActivity.class.getSimpleName();
     private DetailFragment detailFragment;
     @BindView(R.id.floating_action_button_member_add)
     FloatingActionButton floatingActionButton;
-    private TestFragments<Character> characterTestFragments;
-    private TestFragments<Event> eventTestFragments;
-    private TestFragments<Comic> comicTestFragments;
-    private TestFragments<Series> seriesTestFragments;
+    private static FirebaseDatabase firebaseDatabase;
+    private Character retrievedCharacter;
+    private DetailExtrasFragments<Character> characterDetailExtrasFragments;
+    private DetailExtrasFragments<Event> eventDetailExtrasFragments;
+    private DetailExtrasFragments<Comic> comicDetailExtrasFragments;
     private String comic_tag, event_tag, series_tag;
     private String character_extras, comic_extras, event_extras;
     private List<Character> teamMembers = new ArrayList<>();
-    private FirebaseDatabase firebaseDatabase;
+    private DetailExtrasFragments<Series> seriesDetailExtrasFragments;
     private DatabaseReference teamReference;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,9 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
             postponeEnterTransition();
         }
 
+        //Load a Test Ad
+        setupAd();
+
         //get the firebase instance
         setupFirebaseInstance();
         //Retrieve the team members currently stored in the database
@@ -64,6 +71,10 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
         //Receive the extras that were passed through the intent
         //and put them into a bundle
         Bundle argsToPass = getIntent().getExtras();
+
+        //Grab the passed character from the bundle
+        retrievedCharacter = argsToPass.getParcelable(getResources().getString(R.string.character_extras));
+
 
         //Retrieve the string values for all required fields
         retrieveStrings();
@@ -78,9 +89,9 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.detail_information_container, detailFragment)
-                .add(R.id.comic_container, comicTestFragments, comic_tag)
-                .add(R.id.event_container, eventTestFragments, event_tag)
-                .add(R.id.story_container, seriesTestFragments, series_tag)
+                .add(R.id.comic_container, comicDetailExtrasFragments, comic_tag)
+                .add(R.id.event_container, eventDetailExtrasFragments, event_tag)
+                .add(R.id.story_container, seriesDetailExtrasFragments, series_tag)
                 .commit();
     }
 
@@ -92,23 +103,23 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
     }
 
     private void setupComicTestFragment(Bundle passedArgs) {
-        comicTestFragments = new TestFragments<>();
-        comicTestFragments.setArguments(passedArgs);
+        comicDetailExtrasFragments = new DetailExtrasFragments<>();
+        comicDetailExtrasFragments.setArguments(passedArgs);
     }
 
     private void setupCharacterTestFragment(Bundle passedArgs) {
-        characterTestFragments = new TestFragments<>();
-        characterTestFragments.setArguments(passedArgs);
+        characterDetailExtrasFragments = new DetailExtrasFragments<>();
+        characterDetailExtrasFragments.setArguments(passedArgs);
     }
 
     private void setupEventTestFragment(Bundle passedArgs) {
-        eventTestFragments = new TestFragments<>();
-        eventTestFragments.setArguments(passedArgs);
+        eventDetailExtrasFragments = new DetailExtrasFragments<>();
+        eventDetailExtrasFragments.setArguments(passedArgs);
     }
 
     private void setupSeriesTestFragment(Bundle passedArgs) {
-        seriesTestFragments = new TestFragments<>();
-        seriesTestFragments.setArguments(passedArgs);
+        seriesDetailExtrasFragments = new DetailExtrasFragments<>();
+        seriesDetailExtrasFragments.setArguments(passedArgs);
     }
 
     private void setupDetailInfoFragment(Bundle passedArgs) {
@@ -194,6 +205,12 @@ public class DetailActivity extends AppCompatActivity implements TestFragments.A
     @Override
     public void addToDb(Character character) {
         setupFloatingActionButton(character);
+    }
+
+    private void setupAd() {
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override

@@ -18,7 +18,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.marvelpedia.Adapters.TestAdapter;
+import com.example.android.marvelpedia.Adapters.DetailExtrasAdapter;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Utils.Network.CharacterHelper;
 import com.example.android.marvelpedia.Utils.Network.ComicHelper;
@@ -35,19 +35,19 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClick, CharacterHelper.SendCharacterData,
+public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAdapter.ItemOnClick, CharacterHelper.SendCharacterData,
         ComicHelper.SendComicData, EventHelper.SendEventData, SeriesHelper.SendSeriesData {
 
-    private final static String LOG_TAG = TestFragments.class.getSimpleName();
+    private final static String LOG_TAG = DetailExtrasFragments.class.getSimpleName();
     private String CHARACTER_EXTRAS, COMIC_EXTRAS, EVENT_EXTRAS, SERIES_EXTRAS, CHARACTER_TAG, COMIC_TAG,
             EVENT_TAG, SERIES_TAG;
     @BindView(R.id.test_recycler_view)
     RecyclerView itemRecyclerView;
     private Parcelable retrievedItem;
-    private TestAdapter<Comic> mComicAdapter;
-    private TestAdapter<Event> mEventAdapter;
-    private TestAdapter<Series> mSeriesAdapter;
-    private TestAdapter<Character> mCharacterAdapter;
+    private DetailExtrasAdapter<Comic> mComicAdapter;
+    private DetailExtrasAdapter<Event> mEventAdapter;
+    private DetailExtrasAdapter<Series> mSeriesAdapter;
+    private DetailExtrasAdapter<Character> mCharacterAdapter;
     @BindView(R.id.test_item_header)
     TextView itemDetailHeader;
     private RecyclerView.LayoutManager layoutManager;
@@ -62,13 +62,13 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
     private FragmentManager fragmentManager;
     private AddToDatabase characterWriter;
 
-    public TestFragments() {
+    public DetailExtrasFragments() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_detail_test_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_detail_extras, container, false);
 
         retrieveStrings();
         ButterKnife.bind(this, rootView);
@@ -110,95 +110,95 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         Log.v(LOG_TAG, (retrievedItem instanceof Event) + "Event");
         Log.v(LOG_TAG, (retrievedItem instanceof Series) + "Series");
 
+        String currentTag = this.getTag();
+
         //Initialize the fragment manager
         initializeFragmentManager();
 
-        if (passedArgs != null) {
-            if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
-                if (retrievedItem instanceof Character) {
-                    Character currentCharacter = (Character) retrievedItem;
-                    Log.v(LOG_TAG, "Character Is Object");
-                    Log.v(LOG_TAG, this.getTag());
-                    characterWriter.addToDb(currentCharacter);
-                    populateUi();
+        if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
+            if (retrievedItem instanceof Character) {
+                Character currentCharacter = (Character) retrievedItem;
+                Log.v(LOG_TAG, "Character Is Object");
+                Log.v(LOG_TAG, this.getTag());
+                characterWriter.addToDb(currentCharacter);
+                populateUi();
 
-                    switch (this.getTag()) {
-                        case "Comic":
-                            characterHelper.retrieveCharacterComics((Character) retrievedItem);
-                            itemDetailHeader.setText(R.string.comic_header);
-                            break;
-                        case "Event":
-                            characterHelper.retrieveCharacterEvents((Character) retrievedItem);
-                            itemDetailHeader.setText(R.string.event_header);
-                            break;
-                        case "Story":
-                            itemDetailHeader.setText(R.string.story_header);
-                            break;
-                        case "Series":
-                            characterHelper.retrieveCharacterSeries((Character) retrievedItem);
-                            itemDetailHeader.setText(R.string.series_header);
-                            break;
-                    }
-                    //helperMethods.retrieveCharacterEvents((Character) retrievedItem);
+                switch (currentTag) {
+                    case "Comic":
+                        characterHelper.retrieveCharacterComics((Character) retrievedItem);
+                        itemDetailHeader.setText(R.string.comic_header);
+                        break;
+                    case "Event":
+                        characterHelper.retrieveCharacterEvents((Character) retrievedItem);
+                        itemDetailHeader.setText(R.string.event_header);
+                        break;
+                    case "Story":
+                        itemDetailHeader.setText(R.string.story_header);
+                        break;
+                    case "Series":
+                        characterHelper.retrieveCharacterSeries((Character) retrievedItem);
+                        itemDetailHeader.setText(R.string.series_header);
+                        break;
                 }
-            } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
-                if (retrievedItem instanceof Comic) {
-                    Log.v(LOG_TAG, "Comic Is Object");
-                    populateUi();
-                    switch (this.getTag()) {
-                        case "Character":
-                            comicHelper.retrieveComicCharacters((Comic) retrievedItem);
-                            itemDetailHeader.setText(R.string.character_header);
-                            break;
-                        case "Event":
-                            comicHelper.retrieveComicEvents((Comic) retrievedItem);
-                            itemDetailHeader.setText(R.string.event_header);
-                            break;
-                        case "Series":
-                            comicHelper.retrieveComicSeries((Comic) retrievedItem);
-                            itemDetailHeader.setText(R.string.series_header);
-                            break;
-                    }
+                //helperMethods.retrieveCharacterEvents((Character) retrievedItem);
+            }
+        } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
+            if (retrievedItem instanceof Comic) {
+                Log.v(LOG_TAG, "Comic Is Object");
+                populateUi();
+                switch (currentTag) {
+                    case "Character":
+                        comicHelper.retrieveComicCharacters((Comic) retrievedItem);
+                        itemDetailHeader.setText(R.string.character_header);
+                        break;
+                    case "Event":
+                        comicHelper.retrieveComicEvents((Comic) retrievedItem);
+                        itemDetailHeader.setText(R.string.event_header);
+                        break;
+                    case "Series":
+                        comicHelper.retrieveComicSeries((Comic) retrievedItem);
+                        itemDetailHeader.setText(R.string.series_header);
+                        break;
                 }
-            } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
-                if (retrievedItem instanceof Event) {
-                    Log.v(LOG_TAG, "Event Is Object");
-                    Event currentEvent = (Event) retrievedItem;
-                    populateUi();
-                    switch (this.getTag()) {
-                        case "Character":
-                            eventHelper.retrieveEventCharacters(currentEvent);
-                            itemDetailHeader.setText(R.string.character_header);
-                            break;
-                        case "Comic":
-                            eventHelper.retrieveEventComics(currentEvent);
-                            itemDetailHeader.setText(R.string.comic_header);
-                            break;
-                        case "Series":
-                            eventHelper.retrieveEventSeries(currentEvent);
-                            itemDetailHeader.setText(R.string.series_header);
-                            break;
-                    }
+            }
+        } else if (passedArgs.getParcelable(EVENT_EXTRAS) != null) {
+            if (retrievedItem instanceof Event) {
+                Log.v(LOG_TAG, "Event Is Object");
+                Event currentEvent = (Event) retrievedItem;
+                populateUi();
+                switch (currentTag) {
+                    case "Character":
+                        eventHelper.retrieveEventCharacters(currentEvent);
+                        itemDetailHeader.setText(R.string.character_header);
+                        break;
+                    case "Comic":
+                        eventHelper.retrieveEventComics(currentEvent);
+                        itemDetailHeader.setText(R.string.comic_header);
+                        break;
+                    case "Series":
+                        eventHelper.retrieveEventSeries(currentEvent);
+                        itemDetailHeader.setText(R.string.series_header);
+                        break;
                 }
-            } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
-                if (retrievedItem instanceof Series) {
-                    Series currentSeries = (Series) retrievedItem;
-                    Log.v(LOG_TAG, "Series is Object");
-                    populateUi();
-                    switch (this.getTag()) {
-                        case "Character":
-                            seriesHelper.retrieveSeriesCharacters(currentSeries);
-                            itemDetailHeader.setText(R.string.character_header);
-                            break;
-                        case "Comic":
-                            seriesHelper.retrieveSeriesComics(currentSeries);
-                            itemDetailHeader.setText(R.string.comic_header);
-                            break;
-                        case "Event":
-                            seriesHelper.retrieveSeriesEvents(currentSeries);
-                            itemDetailHeader.setText(R.string.event_header);
-                            break;
-                    }
+            }
+        } else if (passedArgs.getParcelable(SERIES_EXTRAS) != null) {
+            if (retrievedItem instanceof Series) {
+                Series currentSeries = (Series) retrievedItem;
+                Log.v(LOG_TAG, "Series is Object");
+                populateUi();
+                switch (currentTag) {
+                    case "Character":
+                        seriesHelper.retrieveSeriesCharacters(currentSeries);
+                        itemDetailHeader.setText(R.string.character_header);
+                        break;
+                    case "Comic":
+                        seriesHelper.retrieveSeriesComics(currentSeries);
+                        itemDetailHeader.setText(R.string.comic_header);
+                        break;
+                    case "Event":
+                        seriesHelper.retrieveSeriesEvents(currentSeries);
+                        itemDetailHeader.setText(R.string.event_header);
+                        break;
                 }
             }
         }
@@ -212,29 +212,29 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
         if (this.getTag().equals(COMIC_TAG)) {
             //Create a new comic Adapter
             // This adapter takes in an empty list of items as well as a context
-            mComicAdapter = new TestAdapter<>(getContext(), mComics, this);
+            mComicAdapter = new DetailExtrasAdapter<>(getContext(), mComics, this);
 
             //Set the adapter on the RecyclerView
             itemRecyclerView.setAdapter(mComicAdapter);
         } else if (this.getTag().equals(EVENT_TAG)) {
             //Create a new event Adapter
             // This adapter takes in an empty list of items as well as a context
-            mEventAdapter = new TestAdapter<>(getContext(), mEvents, this);
+            mEventAdapter = new DetailExtrasAdapter<>(getContext(), mEvents, this);
 
             //Set the adapter on the RecyclerView
             itemRecyclerView.setAdapter(mEventAdapter);
         } else if (this.getTag().equals(SERIES_TAG)) {
             //Create a new series Adapter
             // This adapter takes in an empty list of series items as well as a context
-            mSeriesAdapter = new TestAdapter<>(getContext(), mSeries, this);
+            mSeriesAdapter = new DetailExtrasAdapter<>(getContext(), mSeries, this);
 
             //Set the adapter on the RecyclerView
             itemRecyclerView.setAdapter(mSeriesAdapter);
         } else if (this.getTag().equals(CHARACTER_TAG)) {
             //Create a new Character Adapter
-            mCharacterAdapter = new TestAdapter<>(getContext(), mCharacters, this);
+            mCharacterAdapter = new DetailExtrasAdapter<>(getContext(), mCharacters, this);
 
-            //Set the adapter on the RecylcerView
+            //Set the adapter on the RecyclerView
             itemRecyclerView.setAdapter(mCharacterAdapter);
         }
 
@@ -255,9 +255,9 @@ public class TestFragments<T> extends Fragment implements TestAdapter.ItemOnClic
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 transitionName = transitionView.getTransitionName();
             }
-            TestFragments<Character> newCharacterFragment = new TestFragments<>();
-            TestFragments<Event> newEventFragment = new TestFragments<>();
-            TestFragments<Series> newSeriesFragment = new TestFragments<>();
+            DetailExtrasFragments<Character> newCharacterFragment = new DetailExtrasFragments<>();
+            DetailExtrasFragments<Event> newEventFragment = new DetailExtrasFragments<>();
+            DetailExtrasFragments<Series> newSeriesFragment = new DetailExtrasFragments<>();
             DetailFragment newDetailFragment = new DetailFragment();
             Log.v(LOG_TAG, ((Comic) item).getTitle());
             argsToPass.putParcelable(COMIC_EXTRAS, (Comic) item);

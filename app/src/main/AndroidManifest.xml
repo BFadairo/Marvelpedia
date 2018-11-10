@@ -11,6 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3369393916529285~9024148672" />
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop">
@@ -25,8 +29,17 @@
             android:name=".DetailActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/DetailTheme" />
-        <activity android:name=".TeamActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
 
+        <service
+            android:name=".MyIntentService"
+            android:exported="false">
+
+        </service>
     </application>
 
 </manifest>

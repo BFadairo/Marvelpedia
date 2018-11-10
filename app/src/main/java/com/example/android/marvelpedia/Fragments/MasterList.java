@@ -47,9 +47,9 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     private CharSequence marvelSearchTerm;
     private MasterListCharacterAdapter mCharacterAdapter;
     private Data<Character> characterData;
-    private List<Character> mCharacters = new ArrayList<>();
+    private static List<Character> mCharacters = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
-    private Bundle savedCharacters;
+    private static Bundle savedCharacters;
     private int mColumnCount = 3;
 
     /**
@@ -183,20 +183,22 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
     /*@Override
     public void onResume() {
-        Log.v(LOG_TAG, "On Resume Called");
-        if (!(mCharacters.isEmpty()) && mCharacters != null) {
-            mCharacters = savedCharacters.getParcelable(SAVED_CHARACTERS);
-            //mCharacterAdapter.setCharacterData(mCharacters);
-        }
         super.onResume();
+        Log.v(LOG_TAG, "On Resume Called");
+        if (!(mCharacters.isEmpty())) {
+            mCharacters = savedCharacters.getParcelable(SAVED_CHARACTERS);
+            populateUi();
+            mCharacterAdapter.setCharacterData(mCharacters);
+        }
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         Log.v(LOG_TAG, "On Pause Called");
         savedCharacters.putParcelableArrayList(SAVED_CHARACTERS, (ArrayList<Character>) mCharacters);
-        super.onPause();
+        for (int i = 0; i < mCharacters.size(); i++){
+            Log.v(LOG_TAG, mCharacters.get(i).getName());
+        }
     }*/
-
-
 }

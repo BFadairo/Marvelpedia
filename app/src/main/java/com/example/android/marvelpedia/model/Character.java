@@ -108,7 +108,7 @@ public class Character implements Parcelable {
         this.description = in.readString();
         this.modified = in.readString();
         this.thumbnail = (Thumbnail) in.readSerializable();
-        this.urls = new ArrayList<Url>();
+        this.urls = new ArrayList<>();
         in.readList(this.urls, Url.class.getClassLoader());
         this.imageUrl = in.readString();
     }

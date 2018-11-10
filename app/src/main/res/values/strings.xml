@@ -5,13 +5,17 @@
     <string name="search_bar_hint">Enter search term</string>
     <string name="master_list_character_hint">Character\'s Name</string>
     <string name="comic_title_hint">Comic Title</string>
-    <string name="team_name_hint">Insert Team Name</string>
+    <string name="team_name_hint">Team Name</string>
+    <string name="description_hint">Character Bio</string>
+    <string name="header_hint">Item Header</string>
 
     <!-- Strings related to content transitions -->
     <string name="image_transition">Image Transition</string>
 
     <!-- Strings related to content descriptions -->
     <string name="detail_activity_description">Character Image</string>
+    <string name="detail_frag_list_image_description">Item Detail Image</string>
+    <string name="detail_fragment_image_description">Item Detail Image</string>
 
     <!-- Strings related to text fields -->
     <string name="comic_header">Comics:</string>
@@ -19,6 +23,7 @@
     <string name="event_header">Events:</string>
     <string name="series_header">Series:</string>
     <string name="character_header">Characters:</string>
+    <string name="shared_comic_header">Shared Comics:</string>
 
     <!-- Strings related to extras passed through fragments/intents -->
     <string name="character_extras">character_extras</string>
@@ -36,4 +41,21 @@
     <!-- Strings related to menus -->
     <string name="search">Search</string>
     <string name="team">Team</string>
+
+    <!-- Attribution Text -->
+    <string name="marvel_attribution">Data provided by Marvel. © 2018 MARVEL"</string>
+
+    <!-- AdMob Unit ID -->
+    <string name="banner_ad_unit_id">ca-app-pub-3369393916529285/5739509781</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="team_preferences">Team Preferences</string>
+    <string name="team_name_title">Team Name</string>
+    <string name="team_name_summary">Change your team name</string>
+    <string name="team_name_description">Enter your team name</string>
+    <string name="default_team_value">Avengers</string>
+
+    <!-- Strings related to preferences keys -->
+    <string name="team_name_key">name_of_team</string>
 </resources>

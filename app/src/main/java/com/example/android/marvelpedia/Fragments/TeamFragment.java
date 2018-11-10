@@ -1,19 +1,23 @@
 package com.example.android.marvelpedia.Fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.android.marvelpedia.Adapters.DetailExtrasAdapter;
 import com.example.android.marvelpedia.Adapters.TeamAdapter;
-import com.example.android.marvelpedia.Adapters.TestAdapter;
 import com.example.android.marvelpedia.BuildConfig;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Utils.Network.GetMarvelData;
@@ -37,7 +41,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Comic> {
+public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOnClick<Comic>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final String LOG_TAG = TeamFragment.class.getSimpleName();
     @BindView(R.id.team_recycler_view)
@@ -48,7 +52,11 @@ public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Co
     private List<Comic> teamComics = new ArrayList<>();
     private Data<Comic> comicData;
     private TeamAdapter mTeamAdapter;
-    private TestAdapter<Comic> mTeamComicAdapter;
+    @BindView(R.id.team_name)
+    TextView mTeamName;
+    private DetailExtrasAdapter<Comic> mTeamComicAdapter;
+    private DatabaseReference teamMember;
+
 
     public TeamFragment() {
 
@@ -63,29 +71,21 @@ public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Co
 
         //Get the Firebase Instance
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference teamMember = database.getReference();
+        teamMember = database.getReference();
         populateUi();
 
-        teamMember.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                teamMembers.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Character currentCharacter = postSnapshot.getValue(Character.class);
-                    Log.v(LOG_TAG, currentCharacter.getName());
-                    teamMembers.add(currentCharacter);
-                }
-                mTeamAdapter.setTeamData(teamMembers);
-                getTeamComics(teamMembers);
+        if (savedInstanceState != null) {
+            teamComics = savedInstanceState.getParcelableArrayList("Comics");
+            teamMembers = savedInstanceState.getParcelableArrayList("Members");
+            populateComics();
+            mTeamComicAdapter.setItemData(teamComics);
+        } else {
+            queryDatabase();
+        }
 
-            }
+        registerPreferenceChangeListener();
+        setTeamName();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //Failed to read value
-                Log.w(LOG_TAG, "Failed to Read Database Value.", databaseError.toException());
-            }
-        });
         return rootView;
     }
 
@@ -98,13 +98,14 @@ public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Co
         teamRecyclerView.setAdapter(mTeamAdapter);
 
         //Create a Horizontal Linear Layout manager
+        int numOfColumns = 3;
         RecyclerView.LayoutManager layoutManager;
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        layoutManager = new StaggeredGridLayoutManager(numOfColumns, StaggeredGridLayoutManager.VERTICAL);
         teamRecyclerView.setLayoutManager(layoutManager);
     }
 
     private void populateComics() {
-        mTeamComicAdapter = new TestAdapter<>(getContext(), teamComics, this);
+        mTeamComicAdapter = new DetailExtrasAdapter<>(getContext(), teamComics, this);
         teamComicRecyclerView.setAdapter(mTeamComicAdapter);
 
         RecyclerView.LayoutManager layoutManager;
@@ -114,7 +115,7 @@ public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Co
 
     @Override
     public void onClick(Comic item, ImageView transitionView) {
-
+        Log.v(LOG_TAG, item.getTitle());
     }
 
     private void getTeamComics(List<Character> characters) {
@@ -161,5 +162,71 @@ public class TeamFragment extends Fragment implements TestAdapter.ItemOnClick<Co
         queryString = stringBuilder.toString();
         Log.v(LOG_TAG, queryString);
         return queryString;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("Comics", (ArrayList<Comic>) teamComics);
+        outState.putParcelableArrayList("Members", (ArrayList<Character>) teamMembers);
+    }
+
+    private void queryDatabase() {
+        teamMember.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                teamMembers.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Character currentCharacter = postSnapshot.getValue(Character.class);
+                    Log.v(LOG_TAG, currentCharacter.getName());
+                    teamMembers.add(currentCharacter);
+                }
+                mTeamAdapter.setTeamData(teamMembers);
+                getTeamComics(teamMembers);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //Failed to read value
+                Log.w(LOG_TAG, "Failed to Read Database Value.", databaseError.toException());
+            }
+        });
+    }
+
+    private void setTeamName() {
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
+        String retrievedTeamName = preferences.getString(getResources().getString(R.string.team_name_key), "");
+        mTeamName.setText(retrievedTeamName);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        setTeamName();
+    }
+
+    private void registerPreferenceChangeListener() {
+        /*
+         * Register TeamFragment as an OnPreferenceChangedListener to receive a callback when a
+         * SharedPreference has changed. Please note that we must unregister TeamFragment as an
+         * OnSharedPreferenceChanged listener in onDestroy to avoid any memory leaks.
+         */
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        /*
+         * Register TeamFragment as an OnPreferenceChangedListener to receive a callback when a
+         * SharedPreference has changed. Please note that we must unregister TeamFragment as an
+         * OnSharedPreferenceChanged listener in onDestroy to avoid any memory leaks.
+         */
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 }

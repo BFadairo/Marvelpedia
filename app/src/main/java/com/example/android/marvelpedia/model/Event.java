@@ -36,7 +36,7 @@ public class Event implements Parcelable {
     private List<Url> urls;
     @SerializedName("thumbnail")
     @Expose
-    private Thumbnail thumbnails = null;
+    private Thumbnail thumbnails;
     private String imageUrl;
 
     public Event(int eventId, String eventTitle, String eventDescription, List<Url> urls, Thumbnail thumbnails) {
@@ -51,7 +51,7 @@ public class Event implements Parcelable {
         this.eventId = in.readInt();
         this.eventTitle = in.readString();
         this.eventDescription = in.readString();
-        this.urls = new ArrayList<Url>();
+        this.urls = new ArrayList<>();
         in.readList(this.urls, Url.class.getClassLoader());
         this.thumbnails = (Thumbnail) in.readSerializable();
         this.imageUrl = in.readString();

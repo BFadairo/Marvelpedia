@@ -27,7 +27,8 @@
         android:name="com.example.android.marvelpedia.MasterList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="@dimen/character_recycler_view_margin_right"
+        android:layout_marginRight="@dimen/character_recycler_view_margin_right"
         tools:context=".Fragments.MasterList"
         tools:listitem="@layout/fragment_character" />
 

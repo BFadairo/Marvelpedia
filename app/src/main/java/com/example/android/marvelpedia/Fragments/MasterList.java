@@ -1,6 +1,10 @@
 package com.example.android.marvelpedia.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,23 +19,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
-import com.example.android.marvelpedia.BuildConfig;
 import com.example.android.marvelpedia.DetailActivity;
+import com.example.android.marvelpedia.MyReceiver;
 import com.example.android.marvelpedia.R;
-import com.example.android.marvelpedia.Utils.Network.GetMarvelData;
-import com.example.android.marvelpedia.Utils.Network.RetrofitInstance;
-import com.example.android.marvelpedia.model.BaseJsonResponse;
+import com.example.android.marvelpedia.Service.MasterIntentService;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Data;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -41,6 +41,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     private final static String LOG_TAG = MasterList.class.getSimpleName();
     private final String SAVED_CHARACTERS = "characters";
     private final String CHARACTER_TRANSITION_NAME = "character_transition";
+    private static final String ACTION_CHARS = "com.example.android.marvelpedia.action.CHARS";
+    private static final String EXTRA_PARAM1 = "com.example.android.marvelpedia.extra.PARAM1";
     private String ATTRIBUTION_TEXT;
     private RecyclerView characterRecyclerView;
     private android.support.v7.widget.SearchView marvelSearchView;
@@ -49,6 +51,11 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     private MasterListCharacterAdapter mCharacterAdapter;
     private Data<Character> characterData;
     private static List<Character> mCharacters = new ArrayList<>();
+    private MyReceiver broadcastReceiver;
+    private Boolean isConnected;
+    private ProgressBar loadingBar;
+    private TextView emptyView;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -66,57 +73,36 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
         marvelSearchView = rootView.findViewById(R.id.search_view_text);
 
+        //Find the views related to errors
+        emptyView = rootView.findViewById(R.id.master_error_text_view);
+        loadingBar = rootView.findViewById(R.id.master_progress_bar);
+        //set default visibility for the loading bar
+        loadingBar.setVisibility(View.GONE);
+
+
+        checkNetworkStatus();
+
         if (savedInstanceState != null) {
             mCharacters = savedInstanceState.getParcelableArrayList(SAVED_CHARACTERS);
             populateUi();
             mCharacterAdapter.setCharacterData(mCharacters);
-        } else {
+        }
+
+        if (isConnected) {
             //Used to retrieve the query and update the search results from the SearchView
             getQueryFromSearchBar();
+        } else {
+            //Set the empty view to No Connection when no internet connection is found
+            emptyView.setText(R.string.no_connection);
+            // Sets the loading bar to gone when loading is finished
+            loadingBar.setVisibility(View.GONE);
         }
+
+        setupBroadcastReceiver();
 
         // Return the root view
         return rootView;
     }
-
-    /**
-     * Thie method is used to search for characters
-     *
-     * @param searchTerm for this case (the hero's name)
-     */
-    private void retrieveCharacters(String searchTerm) {
-        populateUi();
-        GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
-        String apiKey = BuildConfig.MARVEL_API_KEY;
-        String privateKey = BuildConfig.MARVEL_HASH_KEY;
-        Call<BaseJsonResponse<Character>> characterCall = marvelData.getCharacters("1", apiKey, privateKey, searchTerm, 100);
-        Log.v(LOG_TAG, "" +
-                characterCall.request().url());
-
-        characterCall.enqueue(new Callback<BaseJsonResponse<Character>>() {
-            @Override
-            public void onResponse(Call<BaseJsonResponse<Character>> call, Response<BaseJsonResponse<Character>> response) {
-                if (response.isSuccessful()) {
-                    mCharacters.clear();
-                    characterData = response.body().getData();
-                    mCharacters = characterData.getResults();
-                    //Log.v(LOG_TAG, fetchedData.getCharacterData().getCount().toString());
-                    //mCharacters = fetchedData.getCharacterData().getCharacters();
-                    mCharacterAdapter.setCharacterData(mCharacters);
-                    /*for (int i = 0; i < 10; i++){
-                        Log.v(LOG_TAG, mCharacters.get(i).getName());
-                    }*/
-                    Log.v(LOG_TAG, "Retrofit Call Successful");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
-                Log.v(LOG_TAG, t.getMessage());
-            }
-        });
-    }
-
 
     private void populateUi() {
         //Create a new Character Adapter
@@ -145,7 +131,9 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
             public boolean onQueryTextSubmit(String searchTerm) {
                 marvelSearchTerm = searchTerm;
                 Log.v(LOG_TAG, "Search Term: " + marvelSearchTerm);
-                retrieveCharacters(searchTerm);
+                loadingBar.setVisibility(View.VISIBLE);
+                emptyView.setText("");
+                prepareSearchIntent(searchTerm);
                 return true;
             }
 
@@ -154,6 +142,15 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
                 return false;
             }
         });
+    }
+
+    private void checkNetworkStatus() {
+        //Check the current internet connection of the phone
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 
 
@@ -173,6 +170,10 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         }
     }
 
+    private void prepareSearchIntent(String searchTerm) {
+        MasterIntentService.startActionPopulateCharacters(getContext(), searchTerm);
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -180,14 +181,36 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         outState.putParcelableArrayList(SAVED_CHARACTERS, (ArrayList<Character>) mCharacters);
     }
 
-    /*@Override
+    private void setupBroadcastReceiver() {
+        if (getContext() != null) {
+            broadcastReceiver = new MyReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent.getAction().equals(ACTION_CHARS)) {
+                        Log.v(LOG_TAG, "Inside onReceive");
+                        Bundle receivedArgs = intent.getBundleExtra(EXTRA_PARAM1);
+                        mCharacters = receivedArgs.getParcelableArrayList(EXTRA_PARAM1);
+                        populateUi();
+                        mCharacterAdapter.setCharacterData(mCharacters);
+                        loadingBar.setVisibility(View.GONE);
+                        if (mCharacters.isEmpty()) {
+                            emptyView.setText(R.string.no_results);
+                        }
+                        //throw new UnsupportedOperationException("Not yet implemented");
+                    }
+                }
+            };
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         Log.v(LOG_TAG, "On Resume Called");
-        if (!(mCharacters.isEmpty())) {
-            mCharacters = savedCharacters.getParcelable(SAVED_CHARACTERS);
-            populateUi();
-            mCharacterAdapter.setCharacterData(mCharacters);
+        if (getContext() != null) {
+            IntentFilter filter = new IntentFilter(ACTION_CHARS);
+            filter.addCategory(Intent.CATEGORY_DEFAULT);
+            getContext().registerReceiver(broadcastReceiver, filter);
         }
     }
 
@@ -195,9 +218,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     public void onPause() {
         super.onPause();
         Log.v(LOG_TAG, "On Pause Called");
-        savedCharacters.putParcelableArrayList(SAVED_CHARACTERS, (ArrayList<Character>) mCharacters);
-        for (int i = 0; i < mCharacters.size(); i++){
-            Log.v(LOG_TAG, mCharacters.get(i).getName());
+        if (getContext() != null) {
+            getContext().unregisterReceiver(broadcastReceiver);
         }
-    }*/
+    }
 }

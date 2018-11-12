@@ -19,21 +19,83 @@ import retrofit2.Response;
 
 public class CharacterHelper {
 
+    private static final String ACTION_FOO = "com.example.android.marvelpedia.action.FOO";
+    private static final String EXTRA_PARAM1 = "com.example.android.marvelpedia.extra.PARAM1";
     private final String LOG_TAG = CharacterHelper.class.getSimpleName();
     private final String apiKey = BuildConfig.MARVEL_API_KEY;
     private final String privateKey = BuildConfig.MARVEL_HASH_KEY;
     private Data<Event> eventData;
     private Data<Comic> comicData;
     private Data<Series> seriesData;
-    private List<Event> mEvents = new ArrayList<>();
-    private List<Comic> mComics = new ArrayList<>();
-    private List<Series> mSeries = new ArrayList<>();
-    private final SendCharacterData mCharacterInterface;
+    public List<Character> mCharacters = new ArrayList<>();
+    public List<Event> mEvents = new ArrayList<>();
+    public List<Comic> mComics = new ArrayList<>();
+    public List<Series> mSeries = new ArrayList<>();
+    public Boolean isFinished = false;
+    public Boolean isFinishedComics = false;
+    public Boolean isFinishedEvents = false;
+    public Boolean isFinishedSeries = false;
+    public Boolean allFinished = false;
+    private Data<Character> characterData;
+    private SendCharacterData mCharacterInterface;
 
     public CharacterHelper(SendCharacterData characterInterface) {
         mCharacterInterface = characterInterface;
     }
 
+    public CharacterHelper() {
+    }
+
+    public void setCharacters(List<Character> characters) {
+        this.mCharacters = characters;
+    }
+
+    public void setEvents(List<Event> mEvents) {
+        this.mEvents = mEvents;
+    }
+
+    public void setComics(List<Comic> mComics) {
+        this.mComics = mComics;
+    }
+
+    public void setSeries(List<Series> mSeries) {
+        this.mSeries = mSeries;
+    }
+
+    public void retrieveCharacters(String searchTerm) {
+        GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
+        String apiKey = BuildConfig.MARVEL_API_KEY;
+        String privateKey = BuildConfig.MARVEL_HASH_KEY;
+        Call<BaseJsonResponse<Character>> characterCall = marvelData.getCharacters("1", apiKey, privateKey, searchTerm, 100);
+        Log.v(LOG_TAG, "" +
+                characterCall.request().url());
+
+        characterCall.enqueue(new Callback<BaseJsonResponse<Character>>() {
+            @Override
+            public void onResponse(Call<BaseJsonResponse<Character>> call, Response<BaseJsonResponse<Character>> response) {
+                if (response.isSuccessful()) {
+                    mCharacters.clear();
+                    characterData = response.body().getData();
+                    mCharacters = characterData.getResults();
+                    setCharacters(mCharacters);
+                    //Log.v(LOG_TAG, fetchedData.getCharacterData().getCount().toString());
+                    //mCharacters = fetchedData.getCharacterData().getCharacters();
+                    //mCharacterAdapter.setCharacterData(mCharacters);
+                    /*for (int i = 0; i < 10; i++){
+                        Log.v(LOG_TAG, mCharacters.get(i).getName());
+                    }*/
+                    isFinished = true;
+                    Log.v(LOG_TAG, "Retrofit Call Successful");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
+                Log.v(LOG_TAG, t.getMessage());
+                isFinished = true;
+            }
+        });
+    }
 
     public void retrieveCharacterEvents(Character character) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
@@ -48,17 +110,20 @@ public class CharacterHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    mCharacterInterface.sendCharacterEvents(mEvents);
+                    setEvents(mEvents);
+                    //mCharacterInterface.sendCharacterEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
+                    isFinishedEvents = true;
                 }
             }
 
             @Override
             public void onFailure(Call<BaseJsonResponse<Event>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
+                isFinishedEvents = true;
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
     }
@@ -76,17 +141,20 @@ public class CharacterHelper {
                     mComics.clear();
                     comicData = response.body().getData();
                     mComics = comicData.getResults();
-                    mCharacterInterface.sendCharacterComics(mComics);
+                    setComics(mComics);
+                    //mCharacterInterface.sendCharacterComics(mComics);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
+                    isFinishedComics = true;
                 }
             }
 
             @Override
             public void onFailure(Call<BaseJsonResponse<Comic>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
+                isFinishedComics = true;
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
     }
@@ -103,19 +171,29 @@ public class CharacterHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    mCharacterInterface.sendCharacterSeries(mSeries);
+                    setSeries(mSeries);
+                    //mCharacterInterface.sendCharacterSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
+                    isFinishedSeries = true;
                 }
             }
 
             @Override
             public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
+                isFinishedSeries = true;
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
                 Log.v(LOG_TAG, "Attempting Call Again");
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
+    }
+
+    public Boolean checkIfAllFinished() {
+        if (isFinishedComics && isFinishedEvents && isFinishedSeries) {
+            allFinished = true;
+        }
+        return allFinished;
     }
 
     public interface SendCharacterData {

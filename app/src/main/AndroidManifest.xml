@@ -6,11 +6,11 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:fullBackupContent="@xml/backup_descriptor"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -37,10 +37,25 @@
             android:theme="@style/AppTheme" />
 
         <service
-            android:name=".MyIntentService"
+            android:name=".Service.MasterIntentService"
             android:exported="false">
 
         </service>
+        <service
+            android:name=".Service.DetailIntentService"
+            android:exported="false">
+
+        </service>
+
+        <receiver android:name=".Widget.MarvelAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/marvel_app_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

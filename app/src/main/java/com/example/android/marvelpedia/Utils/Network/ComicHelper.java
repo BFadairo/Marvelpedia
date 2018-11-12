@@ -25,13 +25,32 @@ public class ComicHelper {
     private Data<Event> eventData;
     private Data<Character> characterData;
     private Data<Series> seriesData;
-    private List<Event> mEvents = new ArrayList<>();
-    private List<Character> mCharacters = new ArrayList<>();
-    private List<Series> mSeries = new ArrayList<>();
-    private final SendComicData comicInterface;
+    public List<Event> mEvents = new ArrayList<>();
+    public List<Character> mCharacters = new ArrayList<>();
+    public List<Series> mSeries = new ArrayList<>();
+    public Boolean isFinishedCharacters = false;
+    public Boolean isFinishedEvents = false;
+    public Boolean isFinishedSeries = false;
+    public Boolean allFinished = false;
+    private SendComicData comicInterface;
 
     public ComicHelper(SendComicData dataInterface) {
         comicInterface = dataInterface;
+    }
+
+    public ComicHelper() {
+    }
+
+    public void setEvents(List<Event> mEvents) {
+        this.mEvents = mEvents;
+    }
+
+    public void setCharacters(List<Character> mCharacters) {
+        this.mCharacters = mCharacters;
+    }
+
+    public void setSeries(List<Series> mSeries) {
+        this.mSeries = mSeries;
     }
 
     public void retrieveComicCharacters(Comic comic) {
@@ -46,7 +65,9 @@ public class ComicHelper {
                     mCharacters.clear();
                     characterData = response.body().getData();
                     mCharacters = characterData.getResults();
-                    comicInterface.sendComicCharacters(mCharacters);
+                    setCharacters(mCharacters);
+                    isFinishedCharacters = true;
+                    //comicInterface.sendComicCharacters(mCharacters);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -55,7 +76,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Character>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
     }
@@ -72,8 +93,10 @@ public class ComicHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    comicInterface.sendComicEvents(mEvents);
+                    setEvents(mEvents);
+                    //comicInterface.sendComicEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
+                    isFinishedEvents = true;
                 }
             }
 
@@ -81,7 +104,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Event>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
     }
@@ -98,7 +121,9 @@ public class ComicHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    comicInterface.sendComicSeries(mSeries);
+                    //comicInterface.sendComicSeries(mSeries);
+                    setSeries(mSeries);
+                    isFinishedSeries = true;
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -107,9 +132,16 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
-                call.clone().enqueue(this);
+                //call.clone().enqueue(this);
             }
         });
+    }
+
+    public Boolean checkIfAllFinished() {
+        if (isFinishedCharacters && isFinishedEvents && isFinishedSeries) {
+            allFinished = true;
+        }
+        return allFinished;
     }
 
     public interface SendComicData {

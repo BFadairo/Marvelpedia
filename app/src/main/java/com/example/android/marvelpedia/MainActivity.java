@@ -1,6 +1,7 @@
 package com.example.android.marvelpedia;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -21,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+    private MyReceiver receiver;
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.bottom_navigation)
@@ -62,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+    }
+
+    private void registerBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter(MyReceiver.ACTION_FOO);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new MyReceiver();
+        registerReceiver(receiver, filter);
+
     }
 
     private void setupMasterList() {
@@ -118,5 +129,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }

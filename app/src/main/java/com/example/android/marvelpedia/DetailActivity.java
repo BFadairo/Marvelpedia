@@ -1,11 +1,17 @@
 package com.example.android.marvelpedia;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.marvelpedia.Fragments.DetailExtrasFragments;
@@ -28,7 +34,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailActivity extends AppCompatActivity implements DetailExtrasFragments.AddToDatabase {
+public class DetailActivity extends AppCompatActivity implements DetailExtrasFragments.AddToDatabase, DetailExtrasFragments.SendComic {
 
     private final String LOG_TAG = DetailActivity.class.getSimpleName();
     private DetailFragment detailFragment;
@@ -37,12 +43,14 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     private static FirebaseDatabase firebaseDatabase;
     private DetailExtrasFragments<Event> eventDetailExtrasFragments;
     private DetailExtrasFragments<Comic> comicDetailExtrasFragments;
-    private String comic_tag, event_tag, series_tag;
+    private DetailExtrasFragments<Character> characterDetailExtrasFragments;
+    private String comic_tag, event_tag, series_tag, character_tag;
     private List<Character> teamMembers = new ArrayList<>();
     private List<Integer> characterIds = new ArrayList<>();
     private String character_extras;
     private DetailExtrasFragments<Series> seriesDetailExtrasFragments;
     private DatabaseReference teamReference;
+    private Intent extrasIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +83,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         //Retrieve the string values for all required fields
         retrieveStrings();
 
-        setupActivityTitle();
+        setupActivityTitle(argsToPass);
 
         setupComicTestFragment(argsToPass);
         setupCharacterTestFragment(argsToPass);
@@ -93,14 +101,15 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
                 .add(R.id.story_container, seriesDetailExtrasFragments, series_tag)
                 .addToBackStack(null)
                 .commit();
-
-
     }
 
-    private void setupActivityTitle() {
-        if (getIntent().getParcelableExtra(character_extras) != null) {
+    private void setupActivityTitle(Bundle arguments) {
+        if (arguments.getParcelable(character_extras) != null) {
             Character passedCharacter = getIntent().getExtras().getParcelable("character_extras");
             setTitle(passedCharacter.getName());
+        } else if (arguments.getParcelable("comic_extras") != null) {
+            Comic passedComic = arguments.getParcelable("comic_extras");
+            setTitle(passedComic.getTitle());
         }
     }
 
@@ -110,7 +119,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     }
 
     private void setupCharacterTestFragment(Bundle passedArgs) {
-        DetailExtrasFragments<Character> characterDetailExtrasFragments = new DetailExtrasFragments<>();
+        characterDetailExtrasFragments = new DetailExtrasFragments<>();
         characterDetailExtrasFragments.setArguments(passedArgs);
     }
 
@@ -136,6 +145,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         String event_extras = getResources().getString(R.string.event_extras);
 
         //Retrieve the string values for the fragment tags
+        character_tag = getResources().getString(R.string.character_tag);
         comic_tag = getResources().getString(R.string.comic_tag);
         event_tag = getResources().getString(R.string.event_tag);
         series_tag = getResources().getString(R.string.series_tag);
@@ -161,7 +171,6 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
     private void removeTeamMember(Character character) {
         Log.v(LOG_TAG, "Removing Character from Team");
-
         Toast.makeText(this, "Removing Character from Team", Toast.LENGTH_SHORT).show();
         teamReference.child(character.getId().toString()).removeValue();
         Log.v(LOG_TAG, "Deleting from Database");
@@ -250,5 +259,51 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
             getSupportFragmentManager().popBackStack();
         }
         super.onBackPressed();
+    }
+
+    @Override
+    public void sendComicDetails(Comic comic, ImageView transitionView) {
+        Bundle passedArgs = new Bundle();
+        passedArgs.putParcelable("comic_extras", comic);
+        setupDetailInfoFragment(passedArgs);
+        setupEventTestFragment(passedArgs);
+        setupCharacterTestFragment(passedArgs);
+        setupActivityTitle(passedArgs);
+        passedArgs.putString("character_transition", ViewCompat.getTransitionName(transitionView));
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.detail_information_container, detailFragment)
+                .addToBackStack(null)
+                .replace(R.id.comic_container, characterDetailExtrasFragments, character_tag)
+                .addToBackStack(null)
+                .replace(R.id.event_container, eventDetailExtrasFragments, event_tag)
+                .addToBackStack(null)
+                .remove(seriesDetailExtrasFragments)
+                .commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //Get the MenuInflater and Inflate the Marvel Menu
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //If the Settings button is hit in the Menu, Open the Settings Activity
+        if (id == R.id.refresh_button) {
+            //Create a new Intent to start the SettingsActivity
+            //Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            //Start the settings Activity
+            Log.v(LOG_TAG, "Refresh Hit");
+            //startActivity(startSettingsActivity);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

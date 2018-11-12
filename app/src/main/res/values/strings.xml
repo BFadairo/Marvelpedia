@@ -17,6 +17,7 @@
     <string name="team_member_description">Team Member</string>
     <string name="detail_frag_list_image_description">Item Detail Image</string>
     <string name="detail_fragment_image_description">Item Detail Image</string>
+    <string name="widget_content_description">Widget Image</string>
 
     <!-- Strings related to text fields -->
     <string name="comic_header">Comics:</string>
@@ -42,6 +43,7 @@
     <!-- Strings related to menus -->
     <string name="search">Search</string>
     <string name="team">Team</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Attribution Text -->
     <string name="marvel_attribution">Data provided by Marvel. © 2018 MARVEL"</string>
@@ -59,4 +61,11 @@
 
     <!-- Strings related to preferences keys -->
     <string name="team_name_key">name_of_team</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
+
+    <!-- Strings related to errors -->
+    <string name="no_connection">No Connection</string>
+    <string name="no_results">No Results</string>
 </resources>

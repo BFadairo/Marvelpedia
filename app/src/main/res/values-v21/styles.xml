@@ -24,7 +24,7 @@
         </item>
     </style>
 
-    <style name="DetailTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="DetailTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>

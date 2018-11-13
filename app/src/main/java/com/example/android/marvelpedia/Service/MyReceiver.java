@@ -7,9 +7,7 @@ import android.util.Log;
 
 public class MyReceiver extends BroadcastReceiver {
 
-    public static final String ACTION_FOO = "com.example.android.marvelpedia.action.FOO";
-    private static final String ACTION_GETCHARS = "com.example.android.marvelpedia.action.CHARS";
-    private static final String ACTION_BAZ = "com.example.android.marvelpedia.action.BAZ";
+    private static final String ACTION_FOO = "com.example.android.marvelpedia.action.FOO";
     private final String LOG_TAG = MyReceiver.class.getSimpleName();
 
     @Override

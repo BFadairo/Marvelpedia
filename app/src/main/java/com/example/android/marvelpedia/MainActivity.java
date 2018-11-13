@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         //Setups and adds the masterList
         setupMasterList();
 
-        setupFirebasePersistance();
+        enableFireBasePersistence();
 
         //Initialize Mobile Ads
         initializeAdMob();
@@ -74,10 +75,16 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 return false;
             }
         });
-
+        /*
+         * Register MainActivity as an OnPreferenceChangedListener to receive a callback when a
+         * SharedPreference has changed. Please note that we must unregister MainActivity as an
+         * OnSharedPreferenceChanged listener in onDestroy to avoid any memory leaks.
+         */
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
-    private void setupFirebasePersistance() {
+    private void enableFireBasePersistence() {
         if (mDatabase == null) {
             mDatabase = FirebaseDatabase.getInstance();
             mDatabase.setPersistenceEnabled(true);
@@ -147,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     protected void onDestroy() {
         super.onDestroy();
         CharacterDatabase.destroyInstance();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override

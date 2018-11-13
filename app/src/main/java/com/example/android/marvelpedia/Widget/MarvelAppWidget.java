@@ -12,9 +12,6 @@ import android.support.v7.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.example.android.marvelpedia.R;
-import com.example.android.marvelpedia.model.Character;
-
-import java.util.List;
 
 /**
  * Implementation of App Widget functionality.
@@ -22,12 +19,10 @@ import java.util.List;
 public class MarvelAppWidget extends AppWidgetProvider {
 
     public static final String WIDGET_IDS_KEY = "myWidgetIdKey";
-    public static final String WIDGET_DATA_KEY = "myWidgetDataKey";
-    private static List<Character> mTeamMembers;
-    private static String teamName;
+    private static final String TEAM_NAME_KEY = "name_of_team";
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    private static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+                                        int appWidgetId) {
 
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.marvel_app_widget);
@@ -35,7 +30,7 @@ public class MarvelAppWidget extends AppWidgetProvider {
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
 
-        String retrievedTeamName = preferences.getString("name_of_team", "");
+        String retrievedTeamName = preferences.getString(TEAM_NAME_KEY, "");
 
         remoteViews.setTextViewText(R.id.widget_team_name, retrievedTeamName);
 

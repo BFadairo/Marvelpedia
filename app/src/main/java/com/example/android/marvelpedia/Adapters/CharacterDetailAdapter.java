@@ -20,10 +20,11 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
 
     private final static String LOG_TAG = CharacterDetailAdapter.class.getSimpleName();
     private final CharacterOnClick characterClick;
+    private Context mContext;
     private List<Character> mCharacters;
 
     public CharacterDetailAdapter(Context context, List<Character> characters, CharacterOnClick onClick) {
-        Context mContext = context;
+        mContext = context;
         mCharacters = characters;
         characterClick = onClick;
     }
@@ -56,8 +57,8 @@ public class CharacterDetailAdapter extends RecyclerView.Adapter<CharacterDetail
             String thumbnailExtension = currentComicThumbnail.getExtension();
             String thumbnailPath = currentComicThumbnail.getPath();
             //String combinedPath = thumbnailPath + "." + thumbnailExtension;
-            String portrait_uncanny = "portrait_uncanny";
-            String combinedPath = thumbnailPath + "/" + portrait_uncanny + "." + thumbnailExtension;
+            String PORTRAIT_UNCANNY = "portrait_uncanny";
+            String combinedPath = thumbnailPath + "/" + PORTRAIT_UNCANNY + "." + thumbnailExtension;
             currentCharacter.setImageUrl(combinedPath);
             Log.v(LOG_TAG, currentCharacter.getImageUrl());
             Log.v(LOG_TAG, combinedPath);

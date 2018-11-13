@@ -11,30 +11,21 @@ import android.widget.RemoteViewsService;
 import com.example.android.marvelpedia.Database.CharacterDatabase;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private final String LOG_TAG = WidgetViewsFactory.class.getSimpleName();
 
-    private Context mContext;
-    private FirebaseDatabase database;
-    private List<Character> teamMembers;
+    private final Context mContext;
     private List<Character> mMembers = new ArrayList<>();
-    private DatabaseReference teamMember;
-    private CharacterDatabase roomDatabase;
-    private Intent mIntent;
-    private int appWidgetId;
 
     public WidgetViewsFactory(Context context, Intent intent) {
         this.mContext = context;
-        this.mIntent = intent;
-        appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 

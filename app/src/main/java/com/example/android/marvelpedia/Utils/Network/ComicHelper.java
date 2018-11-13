@@ -10,7 +10,6 @@ import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Data;
 import com.example.android.marvelpedia.model.Event;
-import com.example.android.marvelpedia.model.Series;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +25,9 @@ public class ComicHelper {
     private final String privateKey = BuildConfig.MARVEL_HASH_KEY;
     private Data<Event> eventData;
     private Data<Character> characterData;
-    private Data<Series> seriesData;
-    public List<Event> mEvents = new ArrayList<>();
-    public List<Character> mCharacters = new ArrayList<>();
-    public List<Series> mSeries = new ArrayList<>();
-    private SendComicData comicInterface;
+    private final SendComicData comicInterface;
+    private List<Event> mEvents = new ArrayList<>();
+    private List<Character> mCharacters = new ArrayList<>();
 
     public ComicHelper(SendComicData dataInterface) {
         comicInterface = dataInterface;
@@ -48,7 +45,6 @@ public class ComicHelper {
                     mCharacters.clear();
                     characterData = response.body().getData();
                     mCharacters = characterData.getResults();
-                    //setCharacters(mCharacters);
                     comicInterface.sendComicCharacters(mCharacters);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
@@ -75,7 +71,6 @@ public class ComicHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    //setEvents(mEvents);
                     comicInterface.sendComicEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
@@ -91,37 +86,9 @@ public class ComicHelper {
         });
     }
 
-    public void retrieveComicSeries(Comic comic) {
-        GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
-        Call<BaseJsonResponse<Series>> seriesComics = marvelData.getComicSeries(comic.getId(), "1", apiKey, privateKey);
-        Log.v(LOG_TAG, "" +
-                seriesComics.request().url());
-        seriesComics.enqueue(new Callback<BaseJsonResponse<Series>>() {
-            @Override
-            public void onResponse(Call<BaseJsonResponse<Series>> call, Response<BaseJsonResponse<Series>> response) {
-                if (response.isSuccessful()) {
-                    mSeries.clear();
-                    seriesData = response.body().getData();
-                    mSeries = seriesData.getResults();
-                    comicInterface.sendComicSeries(mSeries);
-                    Log.v(LOG_TAG, "Retrofit Call Successful");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<BaseJsonResponse<Series>> call, Throwable t) {
-                Log.v(LOG_TAG, t.getMessage());
-                Log.v(LOG_TAG, "Cause: " + t.getCause());
-                //call.clone().enqueue(this);
-            }
-        });
-    }
-
     public interface SendComicData {
         void sendComicCharacters(List<Character> characters);
 
         void sendComicEvents(List<Event> events);
-
-        void sendComicSeries(List<Series> series);
     }
 }

@@ -32,11 +32,11 @@ public class Data<T> implements Serializable {
     }
 
     /**
-     * @param total
-     * @param limit
-     * @param results
-     * @param count
-     * @param offset
+     * @param total total items within data
+     * @param limit limit imposed on data
+     * @param results results of the query are stored here
+     * @param count amount of results within query
+     * @param offset offset
      */
     public Data(Integer offset, Integer limit, Integer total, Integer count, List<T> results) {
         super();

@@ -28,10 +28,12 @@ import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Service.MasterIntentService;
 import com.example.android.marvelpedia.Service.MyReceiver;
 import com.example.android.marvelpedia.model.Character;
-import com.example.android.marvelpedia.model.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * A fragment representing a list of Items.
@@ -40,21 +42,22 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
     private final static String LOG_TAG = MasterList.class.getSimpleName();
     private final String SAVED_CHARACTERS = "characters";
-    private final String CHARACTER_TRANSITION_NAME = "character_transition";
     private static final String ACTION_CHARS = "com.example.android.marvelpedia.action.CHARS";
     private static final String EXTRA_PARAM1 = "com.example.android.marvelpedia.extra.PARAM1";
-    private String ATTRIBUTION_TEXT;
-    private RecyclerView characterRecyclerView;
-    private android.support.v7.widget.SearchView marvelSearchView;
-    private ImageView dataImage;
+    @BindView(R.id.master_character_recycler_view)
+    RecyclerView characterRecyclerView;
+    @BindView(R.id.search_view_text)
+    android.support.v7.widget.SearchView marvelSearchView;
+    @BindView(R.id.master_progress_bar)
+    ProgressBar loadingBar;
+    @BindView(R.id.master_error_text_view)
+    TextView emptyView;
+    private String CHARACTER_EXTRAS;
     private CharSequence marvelSearchTerm;
     private MasterListCharacterAdapter mCharacterAdapter;
-    private Data<Character> characterData;
     private static List<Character> mCharacters = new ArrayList<>();
     private MyReceiver broadcastReceiver;
     private Boolean isConnected;
-    private ProgressBar loadingBar;
-    private TextView emptyView;
 
 
     /**
@@ -69,13 +72,11 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
 
         View rootView = inflater.inflate(R.layout.character_list, container, false);
 
-        // Get a reference to the RecyclerView in the fragment_master_list xml layout file
-        characterRecyclerView = rootView.findViewById(R.id.master_character_recycler_view);
-        marvelSearchView = rootView.findViewById(R.id.search_view_text);
+        //Retrieve any String values we may need from our Strings resource
+        retrieveStrings();
 
-        //Find the views related to errors
-        emptyView = rootView.findViewById(R.id.master_error_text_view);
-        loadingBar = rootView.findViewById(R.id.master_progress_bar);
+        ButterKnife.bind(this, rootView);
+
         //set default visibility for the loading bar
         loadingBar.setVisibility(View.GONE);
 
@@ -104,6 +105,10 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         return rootView;
     }
 
+    private void retrieveStrings() {
+        CHARACTER_EXTRAS = getResources().getString(R.string.character_extras);
+    }
+
     private void populateUi() {
         //Create a new Character Adapter
         // This adapter takes in an empty list of characters as well as a context
@@ -117,13 +122,6 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), mColumnCount);
         characterRecyclerView.setLayoutManager(layoutManager);
     }
-
-    /*@Override
-    public void onClick(Character character) {
-        Intent characterActivity = new Intent(getContext(), DetailActivity.class);
-        characterActivity.putExtra(CHARACTER_EXTRAS, character);
-        startActivity(characterActivity);
-    }*/
 
     private void getQueryFromSearchBar() {
         marvelSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -157,8 +155,8 @@ public class MasterList extends Fragment implements MasterListCharacterAdapter.C
     @Override
     public void onClick(int adapterPosition, Character character, ImageView view) {
         Intent characterActivity = new Intent(getContext(), DetailActivity.class);
-        String CHARACTER_EXTRAS = "character_extras";
         characterActivity.putExtra(CHARACTER_EXTRAS, character);
+        String CHARACTER_TRANSITION_NAME = "character_transition";
         characterActivity.putExtra(CHARACTER_TRANSITION_NAME, ViewCompat.getTransitionName(view));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Log.v(LOG_TAG, view.getTransitionName());

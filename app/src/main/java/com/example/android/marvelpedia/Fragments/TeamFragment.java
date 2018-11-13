@@ -67,7 +67,6 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
 
 
     public TeamFragment() {
-
     }
 
     @Nullable
@@ -261,6 +260,7 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     @Override
     public void onClick(int adapterPosition, Comic item, ImageView transitionView) {
         Log.v(LOG_TAG, item.getTitle());
+        Toast.makeText(getContext(), item.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

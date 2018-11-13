@@ -43,19 +43,16 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     @BindView(R.id.test_recycler_view)
     RecyclerView itemRecyclerView;
     private Parcelable retrievedItem;
-    private final String CHARACTER_TRANSITION_NAME = "character_transition";
-    private final String COMIC_TRANSITION_NAME = "comic_transition";
     private DetailExtrasAdapter<Comic> mComicAdapter;
     private DetailExtrasAdapter<Event> mEventAdapter;
     private DetailExtrasAdapter<Series> mSeriesAdapter;
     private DetailExtrasAdapter<Character> mCharacterAdapter;
     @BindView(R.id.test_item_header)
     TextView itemDetailHeader;
-    private List<Comic> mComics = new ArrayList<>();
-    private List<Character> mCharacters = new ArrayList<>();
-    private List<Event> mEvents = new ArrayList<>();
-    private List<Series> mSeries = new ArrayList<>();
-    private String transitionName;
+    private final List<Comic> mComics = new ArrayList<>();
+    private final List<Character> mCharacters = new ArrayList<>();
+    private final List<Event> mEvents = new ArrayList<>();
+    private final List<Series> mSeries = new ArrayList<>();
     private SendComic mComicInterface;
     private SendCharacter mCharacterInterface;
 
@@ -95,7 +92,6 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
         //Retrieve the passed arguments from the parent activity
         Bundle passedArgs = getArguments();
         if (passedArgs != null) {
-            transitionName = passedArgs.getString(CHARACTER_TRANSITION_NAME);
             if (passedArgs.getParcelable(CHARACTER_EXTRAS) != null) {
                 retrievedItem = passedArgs.getParcelable(CHARACTER_EXTRAS);
             } else if (passedArgs.getParcelable(COMIC_EXTRAS) != null) {
@@ -237,7 +233,6 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
 
     @Override
     public void onClick(int adapterPosition, Object item, ImageView transitionView) {
-        Bundle argsToPass = new Bundle();
         if (item instanceof Comic) {
             mComicInterface.sendComicDetails((Comic) item, transitionView);
         } else if (item instanceof Event) {
@@ -339,25 +334,8 @@ public class DetailExtrasFragments<T> extends Fragment implements DetailExtrasAd
     }
 
     @Override
-    public void sendComicSeries(List<Series> series) {
-        mSeriesAdapter.setItemData(series);
-    }
-
-    @Override
     public void sendCharacterSeries(List<Series> series) {
         mSeriesAdapter.setItemData(series);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.v(LOG_TAG, "On Resume Called");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.v(LOG_TAG, "On Pause Called");
     }
 
     public interface SendComic {

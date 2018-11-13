@@ -20,6 +20,7 @@ public class ComicDetailAdapter extends RecyclerView.Adapter<ComicDetailAdapter.
 
     private final static String LOG_TAG = ComicDetailAdapter.class.getSimpleName();
     private final ComicOnClick comicClick;
+    private final String PORTRAIT_UNCANNY = "portrait_uncanny";
     private List<Comic> mComics;
 
     public ComicDetailAdapter(Context context, List<Comic> comics, ComicOnClick onClick) {

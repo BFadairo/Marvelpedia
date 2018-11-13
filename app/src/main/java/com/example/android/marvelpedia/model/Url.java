@@ -21,8 +21,8 @@ class Url implements Serializable {
     }
 
     /**
-     * @param type
-     * @param url
+     * @param type of resource url
+     * @param url the link
      */
     public Url(String type, String url) {
         super();

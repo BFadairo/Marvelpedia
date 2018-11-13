@@ -40,7 +40,6 @@ public class CharacterFragment extends Fragment implements CharacterDetailAdapte
     private List<Character> mCharacters = new ArrayList<>();
 
     public CharacterFragment() {
-
     }
 
     @Nullable

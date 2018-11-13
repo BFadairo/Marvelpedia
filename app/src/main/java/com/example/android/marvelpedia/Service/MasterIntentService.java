@@ -32,9 +32,7 @@ public class MasterIntentService extends IntentService {
     // TODO: Rename parameters
     private static final String EXTRA_PARAM1 = "com.example.android.marvelpedia.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "com.example.android.marvelpedia.extra.PARAM2";
-    private static List<Character> mCharacters = new ArrayList<>();
     private final String LOG_TAG = MasterIntentService.class.getSimpleName();
-    private CharacterHelper characterHelper;
 
     public MasterIntentService() {
         super("MyIntentService");
@@ -73,7 +71,7 @@ public class MasterIntentService extends IntentService {
     private void handleActionGetChars(String searchTerm) {
         // TODO: Handle action GetChars
         Log.v(LOG_TAG, searchTerm);
-        characterHelper = new CharacterHelper();
+        CharacterHelper characterHelper = new CharacterHelper();
         characterHelper.retrieveCharacters(searchTerm);
         //While Loop so that other lines won't run unless
         //List is updated
@@ -84,7 +82,7 @@ public class MasterIntentService extends IntentService {
             }
         }
         //Retrieve the character list from the character helper
-        mCharacters = characterHelper.mCharacters;
+        List<Character> mCharacters = characterHelper.mCharacters;
         //Create a new bundle
         Bundle receiverArgs = new Bundle();
         //Put the CharacterList into the bundle

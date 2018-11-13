@@ -20,23 +20,23 @@ public class Story implements Parcelable {
     };
     @SerializedName("id")
     @Expose
-    public Integer id;
+    private Integer id;
     @SerializedName("title")
     @Expose
-    public String title;
+    private String title;
     @SerializedName("description")
     @Expose
-    public String description;
+    private String description;
     @SerializedName("type")
     @Expose
-    public String type;
+    private String type;
     @SerializedName("modified")
     @Expose
-    public String modified;
+    private String modified;
     @SerializedName("thumbnail")
     @Expose
-    public Thumbnail thumbnail;
-    public String imageUrl;
+    private Thumbnail thumbnail;
+    private String imageUrl;
 
     /**
      * No args constructor for use in serialization
@@ -53,7 +53,7 @@ public class Story implements Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    protected Story(Parcel in) {
+    private Story(Parcel in) {
         this.id = (Integer) in.readValue(Integer.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();

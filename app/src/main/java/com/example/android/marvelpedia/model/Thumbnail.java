@@ -21,8 +21,8 @@ public class Thumbnail implements Serializable {
     }
 
     /**
-     * @param extension
-     * @param path
+     * @param extension the extension of the thumbnail (ex. .jpg)
+     * @param path the url of the thumbnail
      */
     public Thumbnail(String path, String extension) {
         super();

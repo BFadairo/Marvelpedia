@@ -122,9 +122,8 @@ public class Comic implements Parcelable {
         return imageUrl;
     }
 
-    public String setImageUrl(String imageLink) {
+    public void setImageUrl(String imageLink) {
         imageUrl = imageLink;
-        return imageUrl;
     }
 
     @Override

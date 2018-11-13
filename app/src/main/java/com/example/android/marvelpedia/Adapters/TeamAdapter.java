@@ -19,11 +19,12 @@ import java.util.List;
 public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
 
     private List<Character> mCharacters;
-    private startMemberActivity mMemberActivity;
+    private final startMemberActivity mMemberActivity;
+    private Context mContext;
 
 
     public TeamAdapter(Context context, List<Character> characters, startMemberActivity memberActivity) {
-        Context mContext = context;
+        this.mContext = context;
         this.mMemberActivity = memberActivity;
         this.mCharacters = characters;
     }

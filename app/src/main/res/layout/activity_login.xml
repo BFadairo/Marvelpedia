@@ -59,6 +59,7 @@
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
+                    android:importantForAutofill="no"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>

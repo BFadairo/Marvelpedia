@@ -70,12 +70,12 @@ public class Character implements Parcelable {
     }
 
     /**
-     * @param id
-     * @param thumbnail
-     * @param urls
-     * @param description
-     * @param name
-     * @param modified
+     * @param id the id of the character
+     * @param thumbnail contains the picture of the character
+     * @param urls contains useful urls for the character
+     * @param description a biography of the character
+     * @param name name of the character
+     * @param modified date character was last modified
      */
     public Character(Integer id, String name, String description, String modified, Thumbnail thumbnail, List<Url> urls) {
         this.id = id;

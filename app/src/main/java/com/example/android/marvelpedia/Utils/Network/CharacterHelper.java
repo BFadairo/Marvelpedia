@@ -30,14 +30,14 @@ public class CharacterHelper {
     private Data<Comic> comicData;
     private Data<Series> seriesData;
     public List<Character> mCharacters = new ArrayList<>();
-    public List<Event> mEvents = new ArrayList<>();
-    public List<Comic> mComics = new ArrayList<>();
-    public List<Series> mSeries = new ArrayList<>();
+    private List<Event> mEvents = new ArrayList<>();
+    private List<Comic> mComics = new ArrayList<>();
+    private List<Series> mSeries = new ArrayList<>();
     public Boolean isFinished = false;
-    public Boolean isFinishedComics = false;
-    public Boolean isFinishedEvents = false;
-    public Boolean isFinishedSeries = false;
-    public Boolean allFinished = false;
+    private Boolean isFinishedComics = false;
+    private Boolean isFinishedEvents = false;
+    private Boolean isFinishedSeries = false;
+    private Boolean allFinished = false;
     private Data<Character> characterData;
     private SendCharacterData mCharacterInterface;
 
@@ -48,20 +48,8 @@ public class CharacterHelper {
     public CharacterHelper() {
     }
 
-    public void setCharacters(List<Character> characters) {
+    private void setCharacters(List<Character> characters) {
         this.mCharacters = characters;
-    }
-
-    public void setEvents(List<Event> mEvents) {
-        this.mEvents = mEvents;
-    }
-
-    public void setComics(List<Comic> mComics) {
-        this.mComics = mComics;
-    }
-
-    public void setSeries(List<Series> mSeries) {
-        this.mSeries = mSeries;
     }
 
     public void retrieveCharacters(String searchTerm) {
@@ -174,7 +162,6 @@ public class CharacterHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    //setSeries(mSeries);
                     mCharacterInterface.sendCharacterSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                     isFinishedSeries = true;

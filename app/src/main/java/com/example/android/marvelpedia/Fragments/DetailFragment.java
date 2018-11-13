@@ -26,8 +26,6 @@ public class DetailFragment extends Fragment {
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
     private String CHARACTER_EXTRAS, COMIC_EXTRAS, EVENT_EXTRAS, SERIES_EXTRAS;
     private String imagePath;
-    private final String CHARACTER_TRANSITION_NAME = "character_transition";
-    private String transitionName;
     private Character passedCharacter;
     private Comic passedComic;
     private Event passedEvent;
@@ -45,7 +43,8 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         //Get the passed arguments
         Bundle passedArgs = getArguments();
-        transitionName = passedArgs.getString(CHARACTER_TRANSITION_NAME);
+        String CHARACTER_TRANSITION_NAME = "character_transition";
+        String transitionName = passedArgs.getString(CHARACTER_TRANSITION_NAME);
         retrieveStrings();
         postponeEnterTransition();
 

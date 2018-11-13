@@ -5,7 +5,6 @@ import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Event;
 import com.example.android.marvelpedia.model.Series;
-import com.example.android.marvelpedia.model.Story;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -30,10 +29,6 @@ public interface GetMarvelData {
     Call<BaseJsonResponse<Series>> getCharacterSeries(@Path("characterId") int characterId, @Query("ts") String timeStamp,
                                                       @Query("apikey") String apiKey, @Query("hash") String privateKey, @Query("limit") int limit);
 
-    @GET("characters/{characterId}/stories")
-    Call<BaseJsonResponse<Story>> getCharacterStories(@Path("characterId") int characterId, @Query("ts") String timeStamp,
-                                                      @Query("apikey") String apiKey, @Query("hash") String privateKey, @Query("limit") int limit);
-
 
     @GET("comics/{comicId}/characters")
     Call<BaseJsonResponse<Character>> getComicCharacters(@Path("comicId") int comicId, @Query("ts") String timeStamp,
@@ -42,10 +37,6 @@ public interface GetMarvelData {
     @GET("comics/{comicId}/events")
     Call<BaseJsonResponse<Event>> getComicEvents(@Path("comicId") int comicId, @Query("ts") String timeStamp,
                                                  @Query("apikey") String apiKey, @Query("hash") String privateKey);
-
-    @GET("comics/{comicId}/series")
-    Call<BaseJsonResponse<Series>> getComicSeries(@Path("comicId") int comicId, @Query("ts") String timeStamp,
-                                                  @Query("apikey") String apiKey, @Query("hash") String privateKey);
 
     @GET("events/{eventId}/characters")
     Call<BaseJsonResponse<Character>> getEventCharacters(@Path("eventId") int eventId, @Query("ts") String timeStamp,

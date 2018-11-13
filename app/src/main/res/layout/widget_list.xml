@@ -11,15 +11,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:layout_marginTop="30dp"
-        android:textSize="12dp"
+        android:layout_marginTop="@dimen/stack_view_text_margin_top"
+        android:textSize="@dimen/stack_view_text_size"
         android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/stack_view_widget_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="@dimen/stack_view_image_margin_top"
         android:contentDescription="@string/widget_content_description"
         android:gravity="center_vertical" />
 </RelativeLayout>

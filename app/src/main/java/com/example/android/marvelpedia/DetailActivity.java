@@ -1,6 +1,5 @@
 package com.example.android.marvelpedia;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -48,29 +47,24 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     private DetailExtrasFragments<Comic> comicDetailExtrasFragments;
     private DetailExtrasFragments<Character> characterDetailExtrasFragments;
     private String comic_tag, event_tag, series_tag, character_tag;
-    private static List<Character> teamMembers = new ArrayList<>();
-    private static List<Integer> characterIds = new ArrayList<>();
+    private static final List<Character> teamMembers = new ArrayList<>();
     private static DatabaseReference teamReference;
     private DetailExtrasFragments<Series> seriesDetailExtrasFragments;
-    private static DatabaseReference characterReference;
     private static Boolean isMember;
     private static String userId;
     private static Character retrievedCharacter;
-    private static Context mContext;
-    private static Boolean isFull;
-    private String character_extras, comic_extras, event_extras;
+    private String character_extras;
+    private String comic_extras;
 
     private static void retrieveTeamMembers() {
         teamReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 teamMembers.clear();
-                characterIds.clear();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Log.v(LOG_TAG, postSnapshot.getKey());
                     Character currentCharacter = postSnapshot.getValue(Character.class);
                     teamMembers.add(currentCharacter);
-                    characterIds.add(currentCharacter.getId());
                     Log.v(LOG_TAG, postSnapshot.getKey());
                 }
             }
@@ -82,33 +76,18 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         });
     }
 
+    private void setupActivityTitle(Object item) {
+        if (item instanceof Character) {
+            this.setTitle(((Character) item).getName());
+        } else if (item instanceof Comic) {
+            this.setTitle(((Comic) item).getTitle());
+        } else if (item instanceof Event) {
+            this.setTitle(((Event) item).getEventTitle());
+        }
+    }
+
     private static void addTeamMember(Character character) {
         teamReference.child(character.getName()).setValue(character);
-    }
-
-    private void setupComicTestFragment(Bundle passedArgs) {
-        comicDetailExtrasFragments = new DetailExtrasFragments<>();
-        comicDetailExtrasFragments.setArguments(passedArgs);
-    }
-
-    private void setupCharacterTestFragment(Bundle passedArgs) {
-        characterDetailExtrasFragments = new DetailExtrasFragments<>();
-        characterDetailExtrasFragments.setArguments(passedArgs);
-    }
-
-    private void setupEventTestFragment(Bundle passedArgs) {
-        eventDetailExtrasFragments = new DetailExtrasFragments<>();
-        eventDetailExtrasFragments.setArguments(passedArgs);
-    }
-
-    private void setupSeriesTestFragment(Bundle passedArgs) {
-        seriesDetailExtrasFragments = new DetailExtrasFragments<>();
-        seriesDetailExtrasFragments.setArguments(passedArgs);
-    }
-
-    private void setupDetailInfoFragment(Bundle passedArgs) {
-        detailFragment = new DetailFragment();
-        detailFragment.setArguments(passedArgs);
     }
 
     private static void removeTeamMember(Character character) {
@@ -125,15 +104,13 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
         ButterKnife.bind(this);
 
-        mContext = this;
-
         //Check if the user is logged in
         checkIfUserLoggedIn();
 
         //Load a Test Ad
         setupAd();
 
-        //get the Firebase instance
+        //get the FireBase instance
         setupFirebaseInstance();
 
         //Receive the extras that were passed through the intent
@@ -178,14 +155,29 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
                 .commit();
     }
 
-    private void setupActivityTitle(Object item) {
-        if (item instanceof Character) {
-            this.setTitle(((Character) item).getName());
-        } else if (item instanceof Comic) {
-            this.setTitle(((Comic) item).getTitle());
-        } else if (item instanceof Event) {
-            this.setTitle(((Event) item).getEventTitle());
-        }
+    private void setupComicTestFragment(Bundle passedArgs) {
+        comicDetailExtrasFragments = new DetailExtrasFragments<>();
+        comicDetailExtrasFragments.setArguments(passedArgs);
+    }
+
+    private void setupCharacterTestFragment(Bundle passedArgs) {
+        characterDetailExtrasFragments = new DetailExtrasFragments<>();
+        characterDetailExtrasFragments.setArguments(passedArgs);
+    }
+
+    private void setupEventTestFragment(Bundle passedArgs) {
+        eventDetailExtrasFragments = new DetailExtrasFragments<>();
+        eventDetailExtrasFragments.setArguments(passedArgs);
+    }
+
+    private void setupSeriesTestFragment(Bundle passedArgs) {
+        seriesDetailExtrasFragments = new DetailExtrasFragments<>();
+        seriesDetailExtrasFragments.setArguments(passedArgs);
+    }
+
+    private void setupDetailInfoFragment(Bundle passedArgs) {
+        detailFragment = new DetailFragment();
+        detailFragment.setArguments(passedArgs);
     }
 
     private void setupFirebaseInstance() {
@@ -196,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         //Retrieve the string values for the extras
         character_extras = getResources().getString(R.string.character_extras);
         comic_extras = getResources().getString(R.string.comic_extras);
-        event_extras = getResources().getString(R.string.event_extras);
+        String event_extras = getResources().getString(R.string.event_extras);
 
         //Retrieve the string values for the fragment tags
         character_tag = getResources().getString(R.string.character_tag);
@@ -273,7 +265,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     @Override
     public void sendComicDetails(Comic comic, ImageView transitionView) {
         Bundle passedArgs = new Bundle();
-        passedArgs.putParcelable(getResources().getString(R.string.comic_extras), comic);
+        passedArgs.putParcelable(comic_extras, comic);
         setupDetailInfoFragment(passedArgs);
         setupEventTestFragment(passedArgs);
         setupCharacterTestFragment(passedArgs);
@@ -294,7 +286,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     @Override
     public void sendCharacterDetails(Character character, ImageView transitionView) {
         Bundle passedArgs = new Bundle();
-        passedArgs.putParcelable(getResources().getString(R.string.character_extras), character);
+        passedArgs.putParcelable(character_extras, character);
         setupDetailInfoFragment(passedArgs);
         setupEventTestFragment(passedArgs);
         setupComicTestFragment(passedArgs);
@@ -326,7 +318,6 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
                 Log.v(LOG_TAG, "Movie is Favorite: Deleted");
                 roomDatabase.characterDao().deleteMember(retrievedCharacter);
                 removeTeamMember(retrievedCharacter);
-                isFull = false;
                 for (int i = 0; i < roomDatabase.characterDao().getAllMembers().size(); i++) {
                     Log.v(LOG_TAG, "Member: " + roomDatabase.characterDao().getAllMembers().get(i).getName());
                 }
@@ -334,7 +325,6 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
                 Log.v(LOG_TAG, "Movie is not Favorite: Added");
                 roomDatabase.characterDao().insertTeamMember(retrievedCharacter);
                 addTeamMember(retrievedCharacter);
-                isFull = false;
                 for (int i = 0; i < roomDatabase.characterDao().getAllMembers().size(); i++) {
                     Log.v(LOG_TAG, "Member: " + roomDatabase.characterDao().getAllMembers().get(i).getName());
                 }
@@ -348,8 +338,6 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         @Override
         protected Boolean doInBackground(Character... characters) {
             //retrieveTeamMembers();
-            //isMember = teamReference.equals(characters[0].getName());
-            //isMember = characterIds.contains(retrievedCharacter.getId());
             isMember = roomDatabase.characterDao().fetchCharacterById(characters[0].getId()) != null;
             Log.v("Tag", "Member: " + isMember);
             return isMember;

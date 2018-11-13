@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.email_register_button)
     Button mRegister;
     private FirebaseAuth mAuth;
-    private String userEmail, password;
+    private String userEmail, password, requiredError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initializeRegisterButton();
         initializeSignInButton();
+        retrieveLoginRelatedStrings();
     }
 
     @Override
@@ -100,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = mEmailView.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError("Required.");
+            mEmailView.setError(requiredError);
             valid = false;
         } else {
             mEmailView.setError(null);
@@ -108,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String password = mPasswordView.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError("Required.");
+            mPasswordView.setError(requiredError);
             valid = false;
         } else {
             mPasswordView.setError(null);
@@ -175,6 +176,10 @@ public class LoginActivity extends AppCompatActivity {
             Intent loginSuccess = new Intent(this, MainActivity.class);
             startActivity(loginSuccess);
         }
+    }
+
+    private void retrieveLoginRelatedStrings() {
+        requiredError = getResources().getString(R.string.error_field_required);
     }
 }
 

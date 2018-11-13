@@ -3,20 +3,20 @@ package com.example.android.marvelpedia.Widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.example.android.marvelpedia.Database.CharacterDatabase;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -26,60 +26,65 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
     private Context mContext;
     private FirebaseDatabase database;
     private List<Character> teamMembers;
+    private List<Character> mMembers = new ArrayList<>();
     private DatabaseReference teamMember;
+    private CharacterDatabase roomDatabase;
+    private Intent mIntent;
     private int appWidgetId;
 
     public WidgetViewsFactory(Context context, Intent intent) {
         this.mContext = context;
+        this.mIntent = intent;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
     @Override
     public void onCreate() {
+        Log.v(LOG_TAG, "RemoteViews on create called");
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mMembers = roomDatabase.characterDao().getAllMembers();
+                return null;
+            }
+        };
     }
 
     @Override
     public void onDataSetChanged() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        teamMember = database.getReference();
-        teamMember.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                teamMembers.clear();
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Character currentCharacter = postSnapshot.getValue(Character.class);
-                    Log.v(LOG_TAG, currentCharacter.getName());
-                    teamMembers.add(currentCharacter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //Failed to read value
-                Log.w(LOG_TAG, "Failed to Read Database Value.", databaseError.toException());
-            }
-        });
+        //mMembers = mIntent.getBundleExtra("team_members").getParcelableArrayList("team_list");
     }
 
     @Override
     public void onDestroy() {
-
+        mMembers.clear();
     }
 
     @Override
     public int getCount() {
-        return 0;
+        return mMembers.size();
     }
 
     @Override
-    public RemoteViews getViewAt(int i) {
+    public RemoteViews getViewAt(int position) {
         RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(),
                 R.layout.widget_list);
 
-        Character currentCharacter = teamMembers.get(i);
+        if (position <= getCount()) {
+            Character character = mMembers.get(position);
+            Log.v(LOG_TAG, character.getName());
 
-        Picasso.get().load(currentCharacter.getImageUrl()).into(remoteViews, i, new int[]{appWidgetId});
+            if (character.getThumbnail().getPath() != null) {
+                try {
+                    String completedPath = character.getThumbnail().getPath() + character.getThumbnail().getExtension();
+                    Bitmap bitmap = Picasso.get().load(completedPath).resize(100, 100).get();
+                    remoteViews.setImageViewBitmap(R.id.stack_view_widget_image, bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return remoteViews;
     }
@@ -91,16 +96,16 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 
     @Override
     public int getViewTypeCount() {
-        return 0;
+        return 1;
     }
 
     @Override
-    public long getItemId(int i) {
-        return 0;
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 }

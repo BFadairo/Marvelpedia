@@ -1,7 +1,12 @@
 package com.example.android.marvelpedia.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -10,26 +15,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Entity(tableName = "team")
 public class Character implements Parcelable {
+
+    @NonNull
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     private Integer id;
+
+    @ColumnInfo(name = "name")
     @SerializedName("name")
     @Expose
     private String name;
+
+    @ColumnInfo(name = "description")
     @SerializedName("description")
     @Expose
     private String description;
+
     @SerializedName("modified")
     @Expose
     private String modified;
+
+    @Ignore
     @SerializedName("thumbnail")
     @Expose
     private Thumbnail thumbnail;
+
+    @Ignore
     @SerializedName("urls")
     @Expose
     private List<Url> urls = new ArrayList<>();
 
+    @Ignore
     private String imageUrl;
 
     public static final Creator<Character> CREATOR = new Creator<Character>() {
@@ -100,7 +119,29 @@ public class Character implements Parcelable {
         return imageUrl;
     }
 
+    public void setId(@NonNull Integer id) {
+        this.id = id;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setModified(String modified) {
+        this.modified = modified;
+    }
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void setUrls(List<Url> urls) {
+        this.urls = urls;
+    }
 
     protected Character(Parcel in) {
         this.id = (Integer) in.readValue(Integer.class.getClassLoader());

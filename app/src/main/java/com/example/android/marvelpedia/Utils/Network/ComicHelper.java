@@ -1,6 +1,8 @@
 package com.example.android.marvelpedia.Utils.Network;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.marvelpedia.BuildConfig;
 import com.example.android.marvelpedia.model.BaseJsonResponse;
@@ -28,32 +30,13 @@ public class ComicHelper {
     public List<Event> mEvents = new ArrayList<>();
     public List<Character> mCharacters = new ArrayList<>();
     public List<Series> mSeries = new ArrayList<>();
-    public Boolean isFinishedCharacters = false;
-    public Boolean isFinishedEvents = false;
-    public Boolean isFinishedSeries = false;
-    public Boolean allFinished = false;
     private SendComicData comicInterface;
 
     public ComicHelper(SendComicData dataInterface) {
         comicInterface = dataInterface;
     }
 
-    public ComicHelper() {
-    }
-
-    public void setEvents(List<Event> mEvents) {
-        this.mEvents = mEvents;
-    }
-
-    public void setCharacters(List<Character> mCharacters) {
-        this.mCharacters = mCharacters;
-    }
-
-    public void setSeries(List<Series> mSeries) {
-        this.mSeries = mSeries;
-    }
-
-    public void retrieveComicCharacters(Comic comic) {
+    public void retrieveComicCharacters(Context context, Comic comic) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         Call<BaseJsonResponse<Character>> characterCall = marvelData.getComicCharacters(comic.getId(), "1", apiKey, privateKey);
         Log.v(LOG_TAG, "" +
@@ -65,9 +48,8 @@ public class ComicHelper {
                     mCharacters.clear();
                     characterData = response.body().getData();
                     mCharacters = characterData.getResults();
-                    setCharacters(mCharacters);
-                    isFinishedCharacters = true;
-                    //comicInterface.sendComicCharacters(mCharacters);
+                    //setCharacters(mCharacters);
+                    comicInterface.sendComicCharacters(mCharacters);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -81,7 +63,7 @@ public class ComicHelper {
         });
     }
 
-    public void retrieveComicEvents(Comic comic) {
+    public void retrieveComicEvents(final Context context, Comic comic) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         Call<BaseJsonResponse<Event>> eventCall = marvelData.getComicEvents(comic.getId(), "1", apiKey, privateKey);
         Log.v(LOG_TAG, "" +
@@ -93,10 +75,9 @@ public class ComicHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    setEvents(mEvents);
-                    //comicInterface.sendComicEvents(mEvents);
+                    //setEvents(mEvents);
+                    comicInterface.sendComicEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
-                    isFinishedEvents = true;
                 }
             }
 
@@ -104,6 +85,7 @@ public class ComicHelper {
             public void onFailure(Call<BaseJsonResponse<Event>> call, Throwable t) {
                 Log.v(LOG_TAG, t.getMessage());
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                Toast.makeText(context, "Event Call Failed, Retrying", Toast.LENGTH_SHORT).show();
                 //call.clone().enqueue(this);
             }
         });
@@ -121,9 +103,7 @@ public class ComicHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    //comicInterface.sendComicSeries(mSeries);
-                    setSeries(mSeries);
-                    isFinishedSeries = true;
+                    comicInterface.sendComicSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                 }
             }
@@ -135,13 +115,6 @@ public class ComicHelper {
                 //call.clone().enqueue(this);
             }
         });
-    }
-
-    public Boolean checkIfAllFinished() {
-        if (isFinishedCharacters && isFinishedEvents && isFinishedSeries) {
-            allFinished = true;
-        }
-        return allFinished;
     }
 
     public interface SendComicData {

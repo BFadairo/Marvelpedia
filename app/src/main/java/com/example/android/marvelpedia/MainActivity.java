@@ -1,7 +1,6 @@
 package com.example.android.marvelpedia;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,9 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.example.android.marvelpedia.Database.CharacterDatabase;
 import com.example.android.marvelpedia.Fragments.MasterList;
 import com.example.android.marvelpedia.Fragments.TeamFragment;
+import com.example.android.marvelpedia.Service.MyReceiver;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindString;
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     @BindString(R.string.master_tag)
     String master_tag;
+    public static CharacterDatabase roomDatabase;
+    private static FirebaseDatabase mDatabase;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +41,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mAuth = FirebaseAuth.getInstance();
+
+        //Create the room Database
+        roomDatabase = CharacterDatabase.getAppDatabase(this);
+
         //Setups and adds the masterList
         setupMasterList();
 
-        //Get the Firebase instance and enable persistence
-        //This allows users to access their data offline
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        setupFirebasePersistance();
 
         //
         initializeAdMob();
@@ -67,12 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void registerBroadcastReceiver() {
-        IntentFilter filter = new IntentFilter(MyReceiver.ACTION_FOO);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new MyReceiver();
-        registerReceiver(receiver, filter);
-
+    private void setupFirebasePersistance() {
+        if (mDatabase == null) {
+            mDatabase = FirebaseDatabase.getInstance();
+            mDatabase.setPersistenceEnabled(true);
+        }
     }
 
     private void setupMasterList() {
@@ -125,8 +132,18 @@ public class MainActivity extends AppCompatActivity {
             //Start the settings Activity
             startActivity(startSettingsActivity);
             return true;
+        } else if (id == R.id.sign_out) {
+            //Sign the user out
+            mAuth.signOut();
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CharacterDatabase.destroyInstance();
     }
 }

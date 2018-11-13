@@ -1,6 +1,8 @@
 package com.example.android.marvelpedia.Utils.Network;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.marvelpedia.BuildConfig;
 import com.example.android.marvelpedia.model.BaseJsonResponse;
@@ -97,7 +99,7 @@ public class CharacterHelper {
         });
     }
 
-    public void retrieveCharacterEvents(Character character) {
+    public void retrieveCharacterEvents(final Context context, Character character) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         final Call<BaseJsonResponse<Event>> eventCall = marvelData.getCharacterEvents(character.getId(), "1", apiKey, privateKey, 50);
         Log.v(LOG_TAG, "" +
@@ -110,8 +112,8 @@ public class CharacterHelper {
                     mEvents.clear();
                     eventData = response.body().getData();
                     mEvents = eventData.getResults();
-                    setEvents(mEvents);
-                    //mCharacterInterface.sendCharacterEvents(mEvents);
+                    //setEvents(mEvents);
+                    mCharacterInterface.sendCharacterEvents(mEvents);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                     isFinishedEvents = true;
                 }
@@ -122,13 +124,14 @@ public class CharacterHelper {
                 Log.v(LOG_TAG, t.getMessage());
                 isFinishedEvents = true;
                 Log.v(LOG_TAG, "Cause: " + t.getCause());
+                Toast.makeText(context, "Event Call Failed, Retrying", Toast.LENGTH_SHORT).show();
                 Log.v(LOG_TAG, "Attempting Call Again");
                 //call.clone().enqueue(this);
             }
         });
     }
 
-    public void retrieveCharacterComics(Character character) {
+    public void retrieveCharacterComics(Context context, Character character) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         Call<BaseJsonResponse<Comic>> comicCall = marvelData.getCharacterComics(character.getId(), "1", apiKey, privateKey, 50);
         Log.v(LOG_TAG, "" +
@@ -141,8 +144,8 @@ public class CharacterHelper {
                     mComics.clear();
                     comicData = response.body().getData();
                     mComics = comicData.getResults();
-                    setComics(mComics);
-                    //mCharacterInterface.sendCharacterComics(mComics);
+                    //setComics(mComics);
+                    mCharacterInterface.sendCharacterComics(mComics);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                     isFinishedComics = true;
                 }
@@ -159,7 +162,7 @@ public class CharacterHelper {
         });
     }
 
-    public void retrieveCharacterSeries(Character character) {
+    public void retrieveCharacterSeries(Context context, Character character) {
         GetMarvelData marvelData = new RetrofitInstance().getRetrofitInstance().create(GetMarvelData.class);
         Call<BaseJsonResponse<Series>> seriesCall = marvelData.getCharacterSeries(character.getId(), "1", apiKey, privateKey, 50);
         Log.v(LOG_TAG, "" +
@@ -171,8 +174,8 @@ public class CharacterHelper {
                     mSeries.clear();
                     seriesData = response.body().getData();
                     mSeries = seriesData.getResults();
-                    setSeries(mSeries);
-                    //mCharacterInterface.sendCharacterSeries(mSeries);
+                    //setSeries(mSeries);
+                    mCharacterInterface.sendCharacterSeries(mSeries);
                     Log.v(LOG_TAG, "Retrofit Call Successful");
                     isFinishedSeries = true;
                 }

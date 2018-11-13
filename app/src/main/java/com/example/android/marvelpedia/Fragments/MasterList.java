@@ -24,9 +24,9 @@ import android.widget.TextView;
 
 import com.example.android.marvelpedia.Adapters.MasterListCharacterAdapter;
 import com.example.android.marvelpedia.DetailActivity;
-import com.example.android.marvelpedia.MyReceiver;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.Service.MasterIntentService;
+import com.example.android.marvelpedia.Service.MyReceiver;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Data;
 

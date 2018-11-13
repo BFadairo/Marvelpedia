@@ -1,7 +1,10 @@
 package com.example.android.marvelpedia.Fragments;
 
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,6 +29,8 @@ import com.example.android.marvelpedia.model.BaseJsonResponse;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;
 import com.example.android.marvelpedia.model.Data;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,6 +62,8 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     TextView mTeamName;
     private DetailExtrasAdapter<Comic> mTeamComicAdapter;
     private DatabaseReference teamMember;
+    private String userId;
+    private FirebaseDatabase mDatabase;
 
 
     public TeamFragment() {
@@ -70,9 +77,12 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
 
         ButterKnife.bind(this, rootView);
 
-        //Get the firebase Instance
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        teamMember = database.getReference();
+        //Check if the user is logged in and save their id
+        checkIfUserLoggedIn();
+        //Get the Firebase Instance
+        mDatabase = FirebaseDatabase.getInstance();
+
+        //getTeamMemberReference(mDatabase);
         populateUi();
 
         if (savedInstanceState != null) {
@@ -88,6 +98,18 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
         setTeamName();
 
         return rootView;
+    }
+
+    private void checkIfUserLoggedIn() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            //Retrieve the user's email address
+            userId = user.getUid();
+        }
+    }
+
+    private void getTeamMemberReference(FirebaseDatabase database) {
+        teamMember = database.getReference("users").child(userId).child("team");
     }
 
     private void populateUi() {
@@ -168,6 +190,8 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     }
 
     private void queryDatabase() {
+        DatabaseReference root = mDatabase.getReference();
+        teamMember = root.child("users").child(userId).child("team");
         teamMember.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -179,6 +203,7 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
                 }
                 mTeamAdapter.setTeamData(teamMembers);
                 getTeamComics(teamMembers);
+                updateAppWidget();
 
             }
 
@@ -186,8 +211,28 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 //Failed to read value
                 Log.w(LOG_TAG, "Failed to Read Database Value.", databaseError.toException());
+                Log.v(LOG_TAG, databaseError.getMessage());
             }
         });
+    }
+
+    private void updateAppWidget() {
+        if (!(teamMembers.isEmpty())) {
+            SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(getContext());
+
+            String retrievedTeamName = preferences.getString(getResources().getString(R.string.team_name_key), "");
+
+            Bundle widgetBundle = new Bundle();
+
+            widgetBundle.putString("team_name", retrievedTeamName);
+            widgetBundle.putParcelableArrayList("widget_extras", (ArrayList<? extends Parcelable>) teamMembers);
+
+            Intent widgetIntent = new Intent();
+            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            widgetIntent.putExtra("bundle_extra", widgetBundle);
+            getActivity().sendBroadcast(widgetIntent);
+        }
     }
 
     private void setTeamName() {

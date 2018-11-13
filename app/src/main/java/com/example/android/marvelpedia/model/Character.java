@@ -48,7 +48,7 @@ public class Character implements Parcelable {
     @Expose
     private List<Url> urls = new ArrayList<>();
 
-    @Ignore
+    @ColumnInfo(name = "imageUrl")
     private String imageUrl;
 
     public static final Creator<Character> CREATOR = new Creator<Character>() {
@@ -114,9 +114,12 @@ public class Character implements Parcelable {
         return imageUrl;
     }
 
-    public String setImageUrl(String imageLink) {
-        imageUrl = imageLink;
+    public String setImageUrl() {
         return imageUrl;
+    }
+
+    public void setImageUrl(String imageLink) {
+        this.imageUrl = imageLink;
     }
 
     public void setId(@NonNull Integer id) {

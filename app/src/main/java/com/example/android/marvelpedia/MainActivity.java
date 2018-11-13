@@ -1,6 +1,9 @@
 package com.example.android.marvelpedia;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,7 +17,7 @@ import android.view.MenuItem;
 import com.example.android.marvelpedia.Database.CharacterDatabase;
 import com.example.android.marvelpedia.Fragments.MasterList;
 import com.example.android.marvelpedia.Fragments.TeamFragment;
-import com.example.android.marvelpedia.Service.MyReceiver;
+import com.example.android.marvelpedia.Widget.MarvelAppWidget;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -23,8 +26,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
-    private MyReceiver receiver;
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.bottom_navigation)
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupFirebasePersistance();
 
-        //
+        //Initialize Mobile Ads
         initializeAdMob();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -145,5 +147,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         CharacterDatabase.destroyInstance();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        int[] ids = AppWidgetManager.getInstance(this)
+                .getAppWidgetIds(new ComponentName(this, MarvelAppWidget.class));
+        Intent intent = new Intent();
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(MarvelAppWidget.WIDGET_IDS_KEY, ids);
+        sendBroadcast(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        int mBackStackCount = getSupportFragmentManager().getBackStackEntryCount();
+        //
+        Log.v(LOG_TAG, mBackStackCount + "Size");
+        if (mBackStackCount <= 1) {
+            getSupportFragmentManager().popBackStack();
+        }
+        super.onBackPressed();
     }
 }

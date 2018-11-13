@@ -2,6 +2,7 @@ package com.example.android.marvelpedia.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ViewHolder> {
         ImageView memberImage = viewHolder.mMemberImage;
 
         Thumbnail currentMemberThumbnail = currentTeamMember.getThumbnail();
+        ViewCompat.setTransitionName(memberImage, currentTeamMember.getName());
         //Log.v("TeamAdapter", memberImageLink);
         if (!(currentMemberThumbnail.getPath().isEmpty())) {
             memberImage.setScaleType(ImageView.ScaleType.CENTER_CROP);

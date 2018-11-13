@@ -23,4 +23,7 @@ public interface CharacterDao {
 
     @Delete
     void deleteMember(Character character);
+
+    @Delete
+    void deleteAllMembers(List<Character> characters);
 }

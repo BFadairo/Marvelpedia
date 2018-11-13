@@ -64,6 +64,9 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
 
+    <!-- Strings related to widget fields -->
+    <string name="update_button">Update</string>
+
 
     <!-- Strings related to errors -->
     <string name="no_connection">No Connection</string>
@@ -71,6 +74,7 @@
     <string name="no_characters">No Characters</string>
     <string name="no_comics">No Comics</string>
     <string name="title_activity_login">Sign in</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">(Password)</string>

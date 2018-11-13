@@ -7,7 +7,7 @@ import android.content.Context;
 
 import com.example.android.marvelpedia.model.Character;
 
-@Database(entities = {Character.class}, version = 1, exportSchema = false)
+@Database(entities = {Character.class}, version = 2, exportSchema = false)
 public abstract class CharacterDatabase extends RoomDatabase {
     private final static String DATABASE_NAME = "CharacterDatabase.db";
     private static CharacterDatabase INSTANCE;
@@ -16,6 +16,7 @@ public abstract class CharacterDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             INSTANCE =
                     Room.databaseBuilder(context.getApplicationContext(), CharacterDatabase.class, DATABASE_NAME)
+                            .fallbackToDestructiveMigration()
                             .build();
         }
         return INSTANCE;

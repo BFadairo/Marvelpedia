@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -42,23 +41,20 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
     @Override
     public void onCreate() {
         Log.v(LOG_TAG, "RemoteViews on create called");
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mMembers = roomDatabase.characterDao().getAllMembers();
-                return null;
-            }
-        };
     }
 
     @Override
     public void onDataSetChanged() {
-        //mMembers = mIntent.getBundleExtra("team_members").getParcelableArrayList("team_list");
+        mMembers = CharacterDatabase.getAppDatabase(mContext).characterDao().getAllMembers();
+        for (int i = 0; i < mMembers.size(); i++) {
+            Log.v(LOG_TAG, mMembers.get(i).getName());
+        }
     }
 
     @Override
     public void onDestroy() {
         mMembers.clear();
+        CharacterDatabase.destroyInstance();
     }
 
     @Override
@@ -73,14 +69,17 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 
         if (position <= getCount()) {
             Character character = mMembers.get(position);
+            remoteViews.setTextViewText(R.id.stack_view_widget_name, character.getName());
             Log.v(LOG_TAG, character.getName());
 
-            if (character.getThumbnail().getPath() != null) {
+            if (character.getImageUrl() != null) {
                 try {
-                    String completedPath = character.getThumbnail().getPath() + character.getThumbnail().getExtension();
-                    Bitmap bitmap = Picasso.get().load(completedPath).resize(100, 100).get();
+                    String completedPath = character.getImageUrl();
+                    Log.v(LOG_TAG, completedPath);
+                    Bitmap bitmap = Picasso.get().load(completedPath).get();
                     remoteViews.setImageViewBitmap(R.id.stack_view_widget_image, bitmap);
                 } catch (Exception e) {
+                    Log.v(LOG_TAG, "Crash");
                     e.printStackTrace();
                 }
             }

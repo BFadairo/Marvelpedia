@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.marvelpedia.Adapters.DetailExtrasAdapter;
 import com.example.android.marvelpedia.Adapters.TeamAdapter;
@@ -217,22 +217,9 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     }
 
     private void updateAppWidget() {
-        if (!(teamMembers.isEmpty())) {
-            SharedPreferences preferences = PreferenceManager
-                    .getDefaultSharedPreferences(getContext());
-
-            String retrievedTeamName = preferences.getString(getResources().getString(R.string.team_name_key), "");
-
-            Bundle widgetBundle = new Bundle();
-
-            widgetBundle.putString("team_name", retrievedTeamName);
-            widgetBundle.putParcelableArrayList("widget_extras", (ArrayList<? extends Parcelable>) teamMembers);
-
-            Intent widgetIntent = new Intent();
-            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            widgetIntent.putExtra("bundle_extra", widgetBundle);
-            getActivity().sendBroadcast(widgetIntent);
-        }
+        Intent widgetIntent = new Intent();
+        widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        getActivity().sendBroadcast(widgetIntent);
     }
 
     private void setTeamName() {
@@ -279,5 +266,6 @@ public class TeamFragment extends Fragment implements DetailExtrasAdapter.ItemOn
     @Override
     public void onClick(int adapterPosition, Character character, ImageView transitionView) {
         Log.v(LOG_TAG, character.getName());
+        Toast.makeText(getContext(), character.getName(), Toast.LENGTH_SHORT).show();
     }
 }

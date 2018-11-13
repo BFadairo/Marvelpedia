@@ -1,20 +1,19 @@
 package com.example.android.marvelpedia.Widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
+import android.support.v7.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +21,8 @@ import java.util.List;
  */
 public class MarvelAppWidget extends AppWidgetProvider {
 
-    private static final String TEAM_KEY = "team_name_key";
+    public static final String WIDGET_IDS_KEY = "myWidgetIdKey";
+    public static final String WIDGET_DATA_KEY = "myWidgetDataKey";
     private static List<Character> mTeamMembers;
     private static String teamName;
 
@@ -32,19 +32,30 @@ public class MarvelAppWidget extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.marvel_app_widget);
 
-        remoteViews.setTextViewText(R.id.widget_team_name, teamName);
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
 
-        Bundle factoryIntentBundle = new Bundle();
-        factoryIntentBundle.putParcelableArrayList("team_list", (ArrayList<? extends Parcelable>) mTeamMembers);
+        String retrievedTeamName = preferences.getString("name_of_team", "");
 
+        remoteViews.setTextViewText(R.id.widget_team_name, retrievedTeamName);
+
+        //Intent to launch the WidgetViewsFactory
         Intent factoryIntent = new Intent(context, WidgetService.class);
         factoryIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        factoryIntent.putExtra("team_members", factoryIntentBundle);
         factoryIntent.setData(Uri.parse(factoryIntent.toUri(Intent.URI_INTENT_SCHEME)));
         remoteViews.setRemoteAdapter(appWidgetId, R.id.team_widget_stack_view, factoryIntent);
 
+        //Intent used to update the Widget
+        Intent updateIntent = new Intent();
+        updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        updateIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        remoteViews.setOnClickPendingIntent(R.id.update_widget_button, pendingIntent);
+
         // Instruct the widget manager to update the widget
-        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.team_widget_stack_view);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.team_widget_stack_view);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
 
@@ -73,15 +84,6 @@ public class MarvelAppWidget extends AppWidgetProvider {
         //Check if the action in the Intent is updating the Widget
         if (action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)) {
             //Get the Extras from the Intent and put it into a Bundle
-            Bundle appWidgetBundle = intent.getBundleExtra("bundle_extra");
-            Log.v("Tag", "In Widget OnReceive");
-            if (appWidgetBundle != null) {
-                teamName = appWidgetBundle.getString("team_name");
-                mTeamMembers = appWidgetBundle.getParcelableArrayList("widget_extras");
-                Log.v("Tag", mTeamMembers.get(0).getName());
-
-                Log.v("WidgetTag", "Something: " + teamName);
-            }
             //Get the widget Ids for the Application
             int[] ids = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, MarvelAppWidget.class));
             this.onUpdate(context, AppWidgetManager.getInstance(context), ids);

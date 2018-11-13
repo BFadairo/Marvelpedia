@@ -70,7 +70,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                     Bitmap bitmap = Picasso.get().load(completedPath).get();
                     remoteViews.setImageViewBitmap(R.id.stack_view_widget_image, bitmap);
                 } catch (Exception e) {
-                    Log.v(LOG_TAG, "Crash");
                     e.printStackTrace();
                 }
             }

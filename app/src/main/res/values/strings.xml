@@ -11,6 +11,8 @@
 
     <!-- Strings related to content transitions -->
     <string name="image_transition">Image Transition</string>
+    <string name="character_transition">character_transition</string>
+    <string name="comic_transition">comic_transition</string>
 
     <!-- Strings related to content descriptions -->
     <string name="detail_activity_description">Character Image</string>
@@ -44,6 +46,10 @@
     <string name="search">Search</string>
     <string name="team">Team</string>
     <string name="refresh">Refresh</string>
+
+    <!-- Strings related to FireBase -->
+    <string name="users_path">users</string>
+    <string name="team_child">team</string>
 
     <!-- Attribution Text -->
     <string name="marvel_attribution">Data provided by Marvel. © 2018 MARVEL"</string>

@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -55,6 +56,14 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
     private static Character retrievedCharacter;
     private String character_extras;
     private String comic_extras;
+    @BindString(R.string.character_transition)
+    String character_transition;
+    @BindString(R.string.comic_transition)
+    String comic_transition;
+    @BindString(R.string.users_path)
+    String userPath;
+    @BindString(R.string.team_child)
+    String teamPath;
 
     private static void retrieveTeamMembers() {
         teamReference.addValueEventListener(new ValueEventListener() {
@@ -271,7 +280,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         setupCharacterTestFragment(passedArgs);
         setupActivityTitle(comic);
         hideFabIfNotCharacter(null);
-        passedArgs.putString("character_transition", ViewCompat.getTransitionName(transitionView));
+        passedArgs.putString(comic_transition, ViewCompat.getTransitionName(transitionView));
         Toast.makeText(this, comic.getTitle(), Toast.LENGTH_SHORT).show();
 
         getSupportFragmentManager().beginTransaction()
@@ -292,7 +301,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         setupComicTestFragment(passedArgs);
         setupActivityTitle(character);
         hideFabIfNotCharacter(character);
-        passedArgs.putString("character_transition", ViewCompat.getTransitionName(transitionView));
+        passedArgs.putString(character_transition, ViewCompat.getTransitionName(transitionView));
         Toast.makeText(this, character.getName(), Toast.LENGTH_SHORT).show();
 
         getSupportFragmentManager().beginTransaction()
@@ -306,7 +315,7 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
     private void getTeamReference() {
         DatabaseReference root = firebaseDatabase.getReference();
-        teamReference = root.child("users").child(userId).child("team");
+        teamReference = root.child(userPath).child(userId).child(teamPath);
         teamReference.keepSynced(true);
     }
 
@@ -315,14 +324,14 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
         @Override
         protected Void doInBackground(Void... voids) {
             if (isMember) {
-                Log.v(LOG_TAG, "Movie is Favorite: Deleted");
+                Log.v(LOG_TAG, "Character is Team Member: Deleted");
                 roomDatabase.characterDao().deleteMember(retrievedCharacter);
                 removeTeamMember(retrievedCharacter);
                 for (int i = 0; i < roomDatabase.characterDao().getAllMembers().size(); i++) {
                     Log.v(LOG_TAG, "Member: " + roomDatabase.characterDao().getAllMembers().get(i).getName());
                 }
             } else {
-                Log.v(LOG_TAG, "Movie is not Favorite: Added");
+                Log.v(LOG_TAG, "Character is not a Member: Added");
                 roomDatabase.characterDao().insertTeamMember(retrievedCharacter);
                 addTeamMember(retrievedCharacter);
                 for (int i = 0; i < roomDatabase.characterDao().getAllMembers().size(); i++) {
@@ -335,11 +344,13 @@ public class DetailActivity extends AppCompatActivity implements DetailExtrasFra
 
     private static class MemberCheck extends AsyncTask<Character, Void, Boolean> {
 
+        private static final String LOG_TAG = MemberCheck.class.getSimpleName();
+
         @Override
         protected Boolean doInBackground(Character... characters) {
             //retrieveTeamMembers();
             isMember = roomDatabase.characterDao().fetchCharacterById(characters[0].getId()) != null;
-            Log.v("Tag", "Member: " + isMember);
+            Log.v(LOG_TAG, "Member: " + isMember);
             return isMember;
         }
     }

@@ -8,7 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.example.android.marvelpedia.R;

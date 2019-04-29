@@ -5,6 +5,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.marvelpedia.BuildConfig;
+import com.example.android.marvelpedia.data.Retrofit.GetMarvelData;
+import com.example.android.marvelpedia.data.Retrofit.RetrofitInstance;
 import com.example.android.marvelpedia.model.BaseJsonResponse;
 import com.example.android.marvelpedia.model.Character;
 import com.example.android.marvelpedia.model.Comic;

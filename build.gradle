@@ -7,8 +7,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:4.1.0'
+        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.google.gms:google-services:4.2.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,15 +17,17 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
         jcenter()
     }
 }
 
 ext {
-    androidSupportVersion = "28.0.0"
-    designLibraryVersion = "27.1.0"
-    firebaseVersion = "16.0.4"
+    androidSupportVersion = '1.0.0-beta01'
+    designLibraryVersion = '1.0.0-beta01'
+    firebaseVersion = "16.0.8"
+    firebaseDatabaseVersion = "16.1.0"
 
 }
 

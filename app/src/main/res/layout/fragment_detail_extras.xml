@@ -13,11 +13,11 @@
         android:textSize="@dimen/item_header_text_size"
         android:textStyle="bold" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/test_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".Fragments.DetailExtrasFragments"
+        tools:context=".ui.Fragments.DetailExtrasFragments"
         tools:listItem="@layout/detail_frag_list" />
 
 </LinearLayout>

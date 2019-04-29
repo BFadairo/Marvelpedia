@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.example.android.marvelpedia.Database.CharacterDatabase;
+import com.example.android.marvelpedia.data.Database.CharacterDatabase;
 import com.example.android.marvelpedia.R;
 import com.example.android.marvelpedia.model.Character;
 import com.squareup.picasso.Picasso;

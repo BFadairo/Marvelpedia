@@ -11,6 +11,12 @@ import java.util.List;
 
 public class Comic implements Parcelable {
 
+    @SerializedName("id")
+    @Expose
+    private Integer id;
+    @SerializedName("title")
+    @Expose
+    private String title;
     public static final Creator<Comic> CREATOR = new Creator<Comic>() {
         @Override
         public Comic createFromParcel(Parcel source) {
@@ -22,15 +28,6 @@ public class Comic implements Parcelable {
             return new Comic[size];
         }
     };
-    @SerializedName("id")
-    @Expose
-    private Integer id;
-    @SerializedName("title")
-    @Expose
-    private String title;
-    @SerializedName("issueNumber")
-    @Expose
-    private Integer issueNumber;
     @SerializedName("variantDescription")
     @Expose
     private String variantDescription;
@@ -57,30 +54,9 @@ public class Comic implements Parcelable {
     public Comic() {
     }
 
-    public Comic(Integer id, String title, Integer issueNumber, String variantDescription, String description, String isbn, String upc, List<Url> urls, Thumbnail thumbnail) {
-        this.id = id;
-        this.title = title;
-        this.issueNumber = issueNumber;
-        this.variantDescription = variantDescription;
-        this.description = description;
-        this.isbn = isbn;
-        this.upc = upc;
-        this.urls = urls;
-        this.thumbnails = thumbnail;
-    }
-
-    private Comic(Parcel in) {
-        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.title = in.readString();
-        this.issueNumber = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.variantDescription = in.readString();
-        this.description = in.readString();
-        this.isbn = in.readString();
-        this.upc = in.readString();
-        this.urls = new ArrayList<>();
-        in.readList(this.urls, Url.class.getClassLoader());
-        this.thumbnails = (Thumbnail) in.readSerializable();
-    }
+    @SerializedName("issueNumber")
+    @Expose
+    private Double issueNumber;
 
     public Integer getId() {
         return id;
@@ -90,8 +66,16 @@ public class Comic implements Parcelable {
         return title;
     }
 
-    public Integer getIssueNumber() {
-        return issueNumber;
+    public Comic(Integer id, String title, Double issueNumber, String variantDescription, String description, String isbn, String upc, List<Url> urls, Thumbnail thumbnail) {
+        this.id = id;
+        this.title = title;
+        this.issueNumber = issueNumber;
+        this.variantDescription = variantDescription;
+        this.description = description;
+        this.isbn = isbn;
+        this.upc = upc;
+        this.urls = urls;
+        this.thumbnails = thumbnail;
     }
 
     public String getVariantDescription() {
@@ -126,9 +110,28 @@ public class Comic implements Parcelable {
         imageUrl = imageLink;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    protected Comic(Parcel in) {
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.title = in.readString();
+        this.issueNumber = (Double) in.readValue(Double.class.getClassLoader());
+        this.variantDescription = in.readString();
+        this.description = in.readString();
+        this.isbn = in.readString();
+        this.upc = in.readString();
+        this.urls = new ArrayList<Url>();
+        in.readList(this.urls, Url.class.getClassLoader());
+        this.thumbnails = (Thumbnail) in.readSerializable();
+        this.imageUrl = in.readString();
+    }
+
+    public Double getIssueNumber() {
+        return issueNumber;
     }
 
     @Override
@@ -142,5 +145,6 @@ public class Comic implements Parcelable {
         dest.writeString(this.upc);
         dest.writeList(this.urls);
         dest.writeSerializable(this.thumbnails);
+        dest.writeString(this.imageUrl);
     }
 }
